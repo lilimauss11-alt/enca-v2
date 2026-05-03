@@ -13,18 +13,26 @@
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
+        /* ЖЕСТКАЯ ФИКСАЦИЯ ФОНА */
         html, body { 
             margin: 0; padding: 0; 
-            height: 100%; width: 100%;
+            height: 100vh; width: 100%;
             overflow: hidden; 
             font-family: -apple-system, sans-serif;
+        }
+
+        #body-tag {
             background: url('bg_menu.png') no-repeat center center fixed;
-            background-size: cover;
+            background-size: cover !important;
+            height: 100vh;
+            width: 100%;
+            position: fixed;
+            top: 0; left: 0;
         }
 
         #app-container { 
             position: relative; 
-            width: 100%; height: 100%; 
+            width: 100%; height: 100vh; 
         }
 
         .screen {
@@ -112,6 +120,7 @@
                 <div class="setting-row"><span>Голос:</span><select id="voice-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
                 <div class="setting-row"><span>Язык:</span><select id="ui-lang" onchange="updateLang()"><option value="ru">Русский</option><option value="en">English</option></select></div>
             </div>
+            
             <button class="menu-btn btn-ear" onclick="startGame('listening')">НА СЛУХ</button>
             <button class="menu-btn btn-classic" onclick="startGame('classic')">КЛАССИКА</button>
             <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
@@ -133,7 +142,8 @@
                 <div id="writing-mode" style="display:none; width:100%; flex-direction:column; align-items:center; gap:10px;">
                     <div id="target-ru" style="width:100%; max-width:400px; padding:40px 20px; background:#fff; border-radius:20px; text-align:center; font-size:22px; font-weight:bold; box-shadow:0 10px 20px rgba(0,0,0,0.15);">...</div>
                     <input type="text" id="user-input" style="width:100%; max-width:400px; padding:15px; border-radius:15px; border:2px solid #ccc; font-size:18px; text-align:center; outline:none;" placeholder="...">
-                    <button class="action-btn" onclick="checkWritingAnswer()" data-t="check">Проверить</button>
+                    <!-- ЦВЕТНАЯ КНОПКА ПРОВЕРИТЬ -->
+                    <button class="action-btn" onclick="checkWritingAnswer()" id="check-btn"><span class="t-green">Прове</span><span class="t-red">рить</span></button>
                 </div>
 
                 <button class="action-btn" onclick="backToMenu()" id="back-btn"><span class="t-green">Ме</span><span class="t-red">Ню</span></button>
@@ -160,9 +170,9 @@
         function updateLang() {
             const lang = document.getElementById('ui-lang').value;
             const backBtn = document.getElementById('back-btn');
-            const checkBtn = document.querySelector('[data-t="check"]');
+            const checkBtn = document.getElementById('check-btn');
             backBtn.innerHTML = lang === 'ru' ? '<span class="t-green">Ме</span><span class="t-red">Ню</span>' : '<span class="t-green">Me</span><span class="t-red">Nu</span>';
-            checkBtn.textContent = lang === 'ru' ? 'Проверить' : 'Check';
+            checkBtn.innerHTML = lang === 'ru' ? '<span class="t-green">Прове</span><span class="t-red">рить</span>' : '<span class="t-green">Ch</span><span class="t-red">eck</span>';
         }
 
         function startGame(mode) {
@@ -183,7 +193,6 @@
         function handleCardClick(card) {
             if (card.classList.contains('matched')) return;
             if (card.dataset.lang === 'en') speak(card.dataset.text);
-            
             const sameLangSelected = selectedCards.find(c => c.dataset.lang === card.dataset.lang);
             if (sameLangSelected) {
                 sameLangSelected.classList.remove('selected');
@@ -194,6 +203,7 @@
                 const [c1, c2] = selectedCards;
                 if (c1.dataset.pairId === c2.dataset.pairId) {
                     correctCount++; c1.classList.add('is-correct', 'matched'); c2.classList.add('is-correct', 'matched');
+                    if (document.querySelectorAll('.card:not(.matched)').length === 0 && pool.length > 0) setTimeout(initMatchingRound, 800);
                 } else {
                     wrongCount++; c1.classList.add('is-wrong'); c2.classList.add('is-wrong');
                     setTimeout(() => { c1.classList.remove('selected', 'is-wrong'); c2.classList.remove('selected', 'is-wrong'); }, 500);
@@ -207,13 +217,14 @@
         function initMatchingRound() {
             const enCol = document.getElementById('en-column'); const ruCol = document.getElementById('ru-column');
             enCol.innerHTML = ''; ruCol.innerHTML = '';
-            pool.forEach(w => {
+            let round = pool.splice(0, 6);
+            round.forEach(w => {
                 const card = document.createElement('div'); card.className = 'card';
                 if (currentGameMode === 'listening') card.classList.add('hidden-en');
                 card.textContent = w.en; card.dataset.pairId = w.en; card.dataset.lang = 'en'; card.dataset.text = w.en;
                 card.onclick = () => handleCardClick(card); enCol.appendChild(card);
             });
-            [...pool].sort(() => Math.random() - 0.5).forEach(w => {
+            [...round].sort(() => Math.random() - 0.5).forEach(w => {
                 const card = document.createElement('div'); card.className = 'card';
                 card.textContent = w.ru; card.dataset.pairId = w.en; card.dataset.lang = 'ru';
                 card.onclick = () => handleCardClick(card); ruCol.appendChild(card);
