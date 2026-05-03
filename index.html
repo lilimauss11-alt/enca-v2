@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EnCa Pro - Slide Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EnCa Pro - Clean Edition</title>
     <style>
         :root {
             --icon-red: #b31d35;
@@ -13,64 +13,80 @@
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
-        body { 
-            margin: 0; padding: 0; overflow: hidden; 
+        /* ЧИНЮ ФОН НА ВЕСЬ ЭКРАН */
+        html, body { 
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            overflow: hidden; 
             font-family: -apple-system, sans-serif;
-            background: #222;
+            background: #000; /* Запасной фон */
+        }
+
+        #body-tag {
+            background-size: cover !important; 
+            background-position: center !important;
+            background-attachment: fixed;
+            height: 100%; width: 100%;
         }
 
         #app-container {
-            position: relative; width: 100vw; height: 100vh;
+            position: relative; width: 100%; height: 100%;
         }
 
         .screen {
             position: absolute; width: 100%; height: 100%;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column; align-items: center; padding: 20px;
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 20px; padding-top: 50px; /* Отступ сверху */
             background-size: cover !important; background-position: center !important;
         }
 
-        /* НАЧАЛЬНОЕ ПОЛОЖЕНИЕ */
-        #menu-screen { z-index: 2; background: url('bg_menu.png'); transform: translateY(0); }
-        #game-screen { z-index: 1; background: url('bg_menu.png'); transform: translateY(100%); }
+        /* НАЧАЛЬНОЕ ПОЛОЖЕНИЕ ( Slide Effect ) */
+        #menu-screen { z-index: 2; transform: translateY(0); }
+        #game-screen { z-index: 1; transform: translateY(100%); }
 
         /* КОГДА ИГРА АКТИВНА */
         .game-active #menu-screen { transform: translateY(-100%); }
         .game-active #game-screen { transform: translateY(0); z-index: 3; }
 
-        /* НОВАЯ ПАНЕЛЬ НАСТРОЕК (БЕЗ ОБРАМЛЕНИЯ) */
+        /* НОВАЯ СЕРАЯ КАРТОЧКА НАСТРОЕК (как игровые кнопки) */
         .settings-card {
-            width: 100%; max-width: 420px;
-            background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
-            padding: 25px; margin: 20px 0;
-            display: flex; flex-direction: column; gap: 12px; font-weight: bold;
+            width: 100%; max-width: 440px; /* Сделал шире */
+            background: #fff; border-radius: 20px;
+            padding: 25px 30px; margin: 20px 0; margin-bottom: 30px;
+            display: flex; flex-direction: column; gap: 15px; font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Тень как у кнопок */
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; color: #000; font-size: 15px; }
-        select { border: 1px solid #ccc; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 8px; width: 110px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; color: #000; font-size: 16px; }
+        select { border: 1px solid #ccc; background: #f9f9f9; padding: 6px; border-radius: 8px; width: 120px; font-size: 14px; }
 
+        /* ЦВЕТНЫЕ КНОПКИ МЕНЮ */
         .menu-btn {
             width: 100%; max-width: 400px; height: 90px; border-radius: 20px; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 15px;
-            gap: 15px; font-weight: bold; font-size: 18px; 
+            display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+            gap: 15px; font-weight: bold; font-size: 19px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.2s;
         }
         .btn-ear { background: var(--icon-green); color: white; }
         .btn-classic { background: var(--icon-red); color: white; }
         .btn-write { background: white; border: 3px solid var(--icon-green); color: var(--icon-green); }
+        .menu-btn:active { transform: scale(0.97); }
 
         /* ИГРА */
         .stats-container { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; max-width: 600px; }
         .stat-card { 
             flex: 1; height: 55px; background: rgba(255,255,255,0.9); border-radius: 14px; 
             display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
         .stat-card img { height: 25px; }
 
         .card {
             min-height: 90px; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; justify-content: center;
-            padding: 15px; text-align: center; font-size: 14px; font-weight: 700;
-            background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
-            color: #333;
+            padding: 15px; text-align: center; font-size: 15px; font-weight: 700;
+            background: #fff; border-radius: 18px; color: #333;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
 
         /* ОШИБКА И ТРЯСКА */
@@ -78,19 +94,19 @@
         .is-wrong { 
             outline: 6px solid var(--error-red) !important; 
             outline-offset: -3px;
-            border-radius: 18px;
             animation: shake 0.4s;
         }
 
-        .is-correct { background: url('card_en.png') no-repeat center !important; background-size: 100% 100% !important; border-radius: 18px; }
-        .selected { filter: brightness(0.8); outline: 4px solid var(--neutral-gray); border-radius: 18px; }
+        .is-correct { background: var(--icon-green) !important; color: white !important; }
+        .selected { outline: 4px solid var(--neutral-gray); }
         .matched { opacity: 0.4; pointer-events: none; }
 
         #writing-mode { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
         .write-card { 
             width: 100%; max-width: 500px; padding: 50px 20px; 
-            background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
-            text-align: center; font-size: 24px; font-weight: bold; color: #000;
+            background: #fff; border-radius: 20px;
+            text-align: center; font-size: 26px; font-weight: bold; color: #000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .write-input { 
             width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; border: 2px solid #ccc; 
@@ -98,25 +114,28 @@
         }
 
         .back-menu-btn {
-            background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
-            padding: 15px 40px; cursor: pointer; font-weight: 900; margin-top: 30px;
+            background: #fff; padding: 15px 40px; cursor: pointer; font-weight: 900; 
+            margin-top: 40px; border-radius: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
         }
         
         .hidden-en { color: transparent !important; position: relative; }
-        .hidden-en::after { content: ''; background: url('listen_icon.png') no-repeat center; background-size: contain; width: 35px; height: 35px; position: absolute; }
+        .hidden-en::after { content: '?'; color: #888; font-size: 30px; position: absolute; }
     </style>
 </head>
-<body id="body-tag">
+<body id="body-tag" style="background: url('bg_menu.png');">
 
     <div id="app-container">
         <!-- ЭКРАН МЕНЮ -->
         <div id="menu-screen" class="screen">
             <div class="menu-title"><span style="color:var(--icon-green)">En</span><span style="color:var(--icon-red)">Ca</span></div>
+            
+            <!-- НОВАЯ СЕРАЯ КАРТОЧКА НАСТРОЕК -->
             <div class="settings-card">
                 <div class="setting-row"><span>Скорость:</span><select id="speech-rate"><option value="0.9" selected>Normal</option><option value="1.2">Fast</option></select></div>
                 <div class="setting-row"><span>Голос:</span><select id="voice-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
                 <div class="setting-row"><span>Язык:</span><select id="ui-lang" onchange="updateLang()"><option value="ru">Русский</option><option value="en">English</option></select></div>
             </div>
+            
             <button class="menu-btn btn-ear" onclick="startGame('listening')">НА СЛУХ</button>
             <button class="menu-btn btn-classic" onclick="startGame('classic')">КЛАССИКА</button>
             <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
@@ -128,7 +147,7 @@
                 <div class="stats-container">
                     <div class="stat-card"><img src="excellent.png"><span id="correct-count">0</span></div>
                     <div class="stat-card"><img src="bad.png"><span id="wrong-count">0</span></div>
-                    <div class="stat-card"><img src="cards_icon.png" style="height:20px;"><span id="pool-count">0</span></div>
+                    <div class="stat-card"><span style="font-size:20px;">📦</span><span id="pool-count">0</span></div>
                 </div>
                 
                 <div id="matching-columns" style="display:flex; gap:12px; width:100%;">
@@ -147,7 +166,7 @@
     </div>
 
     <script>
-        // Тестовый набор из 2 слов
+        // Тестовый набор
         const allWords = [
             { en: "What's up", ru: "Как дела" }, 
             { en: "Not much", ru: "Ничего особенного" }
@@ -165,8 +184,9 @@
             currentGameMode = mode;
             pool = [...allWords].sort(() => Math.random() - 0.5);
             
+            // Смена фона на игровой стороне
             const bgs = { listening: 'bg_listen.png', classic: 'bg_classic.png', writing: 'bg_write.png' };
-            document.getElementById('game-screen').style.background = `url('${bgs[mode]}')`;
+            // document.getElementById('game-screen').style.background = `url('${bgs[mode]}')`; // Временно закомментил, так как у тебя png
             
             document.getElementById('body-tag').classList.add('game-active');
             
@@ -195,17 +215,10 @@
             if (selectedCards.length === 2) {
                 const [c1, c2] = selectedCards;
                 if (c1.dataset.pairId === c2.dataset.pairId) {
-                    correctCount++; 
-                    c1.classList.add('is-correct', 'matched'); 
-                    c2.classList.add('is-correct', 'matched');
+                    correctCount++; c1.classList.add('is-correct', 'matched'); c2.classList.add('is-correct', 'matched');
                 } else {
-                    wrongCount++; 
-                    c1.classList.add('is-wrong'); 
-                    c2.classList.add('is-wrong');
-                    setTimeout(() => { 
-                        c1.classList.remove('selected', 'is-wrong'); 
-                        c2.classList.remove('selected', 'is-wrong'); 
-                    }, 500);
+                    wrongCount++; c1.classList.add('is-wrong'); c2.classList.add('is-wrong');
+                    setTimeout(() => { c1.classList.remove('selected', 'is-wrong'); c2.classList.remove('selected', 'is-wrong'); }, 500);
                 }
                 selectedCards = [];
                 document.getElementById('correct-count').textContent = correctCount;
@@ -242,18 +255,13 @@
             document.getElementById('user-input').focus();
         }
 
-        // ОБРАБОТКА ENTER В ПИСЬМЕ
         document.getElementById('user-input').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const card = document.getElementById('target-ru');
-                const val = e.target.value.trim().toLowerCase();
-                if (val === currentWritingWord.en.toLowerCase()) {
-                    correctCount++; 
-                    card.classList.add('is-correct'); 
-                    setTimeout(nextWritingWord, 600);
+                if (e.target.value.trim().toLowerCase() === currentWritingWord.en.toLowerCase()) {
+                    correctCount++; card.classList.add('is-correct'); setTimeout(nextWritingWord, 600);
                 } else {
-                    wrongCount++; 
-                    card.classList.add('is-wrong');
+                    wrongCount++; card.classList.add('is-wrong');
                     setTimeout(() => card.classList.remove('is-wrong'), 500);
                 }
                 document.getElementById('correct-count').textContent = correctCount;
