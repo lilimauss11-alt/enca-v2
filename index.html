@@ -9,6 +9,7 @@
             --icon-red: #b31d35;
             --icon-green: #108a50;
             --neutral-gray: #d1d1d1;
+            --error-red: #8b0000; /* Темно-красный как на скрине */
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
@@ -34,41 +35,38 @@
         #menu-screen, #game-ui { backface-visibility: hidden; }
         #game-ui { transform: rotateY(180deg); display: none; position: absolute; top: 0; width: 100%; }
 
+        /* ОБНОВЛЕННАЯ ПАНЕЛЬ НАСТРОЕК (Картинка 3) */
         #menu-screen { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px; text-align: center; }
-        .menu-title { font-size: 54px; font-weight: 900; margin: 20px 0; letter-spacing: -2px; }
-        .t-en, .t-me { color: var(--icon-green); }
-        .t-ca, .t-nyu { color: var(--icon-red); }
-
+        .menu-title { font-size: 54px; font-weight: 900; margin: 15px 0; letter-spacing: -2px; }
+        
         .settings-panel {
             background: url('ui_frame.png') no-repeat center; background-size: 100% 100%;
-            padding: 25px; margin-bottom: 25px;
-            display: flex; flex-direction: column; gap: 12px; font-weight: bold;
+            padding: 20px 25px; margin-bottom: 20px;
+            display: flex; flex-direction: column; gap: 8px; font-weight: bold;
         }
-        .setting-row { display: flex; justify-content: space-between; align-items: center; color: #333; font-size: 14px; }
-        select { border: 1px solid #ccc; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 8px; width: 100px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; color: #000; font-size: 13px; }
+        select { border: 1px solid #ccc; background: rgba(255,255,255,0.8); padding: 3px; border-radius: 6px; width: 90px; font-size: 12px; }
 
         .menu-btn {
             height: 90px; border-radius: 20px; border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             gap: 15px; font-weight: bold; font-size: 18px; transition: 0.3s;
-            background: url('ui_frame.png') no-repeat center; background-size: 100% 100%;
-            position: relative; overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
-        .menu-btn::before { content: ''; position: absolute; top: 10%; left: 5%; right: 5%; bottom: 10%; border-radius: 15px; z-index: 0; opacity: 0.8; }
-        .btn-ear::before { background: var(--icon-green); }
-        .btn-classic::before { background: var(--icon-red); }
-        .btn-write::before { background: white; border: 2px solid var(--icon-green); }
-        
-        .menu-btn span, .menu-btn img { z-index: 1; color: white; }
-        .btn-write span { color: var(--icon-green); }
         .menu-btn img { height: 45px; }
+        .btn-ear { background: var(--icon-green); color: white; }
+        .btn-classic { background: var(--icon-red); color: white; }
+        .btn-write { background: white; border: 3px solid var(--icon-green); color: var(--icon-green); }
+        .menu-btn:active { transform: scale(0.95); }
 
-        .stats-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        /* СТАТИСТИКА */
+        .stats-container { display: flex; gap: 10px; margin-bottom: 25px; padding: 0 5px; }
         .stat-card { 
-            flex: 1; height: 50px; background: rgba(255,255,255,0.9); border-radius: 12px; 
+            flex: 1; height: 55px; background: rgba(255,255,255,0.9); border-radius: 14px; 
             display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
-        .stat-card img { height: 25px; }
+        .stat-card img { height: 28px; }
 
         .columns-container { display: flex; gap: 12px; }
         .column { flex: 1; display: flex; flex-direction: column; gap: 10px; }
@@ -80,10 +78,16 @@
             background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
             color: #333;
         }
-        .card.selected { transform: scale(1.05); filter: brightness(0.8); outline: 4px solid var(--neutral-gray); border-radius: 18px; }
         
+        /* КРАСНАЯ РАМКА ВОКРУГ КАРТОЧКИ (Картинка 2) */
+        .card.is-wrong { 
+            outline: 4px solid var(--error-red); 
+            outline-offset: -2px;
+            border-radius: 18px;
+        }
+
         .card.is-correct { background: url('card_en.png') no-repeat center !important; background-size: 100% 100% !important; border-radius: 18px; }
-        .card.is-wrong { background: url('card_ru.png') no-repeat center !important; background-size: 100% 100% !important; border-radius: 18px; }
+        .card.selected { transform: scale(1.05); filter: brightness(0.8); outline: 4px solid var(--neutral-gray); border-radius: 18px; }
         .card.matched { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
 
         .hidden-en { color: transparent !important; position: relative; }
@@ -92,9 +96,7 @@
         #writing-mode { display: none; flex-direction: column; align-items: center; gap: 20px; }
         .write-card { 
             width: 100%; padding: 50px 20px; background: url('ui_frame.png') no-repeat center;
-            background-size: 100% 100%; text-align: center; font-size: 22px; font-weight: bold; 
-            color: #000; /* Вопрос всегда черным */
-            transition: background 0.3s ease;
+            background-size: 100% 100%; text-align: center; font-size: 22px; font-weight: bold; color: #000;
         }
         .write-input { 
             width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #ccc; 
@@ -104,8 +106,11 @@
         .bottom-nav { width: 100%; display: flex; justify-content: center; margin-top: 30px; }
         .back-menu-btn {
             background: url('ui_frame.png') no-repeat center; background-size: 100% 100%;
-            padding: 15px 40px; cursor: pointer; font-weight: 900; font-size: 18px; color: #333;
+            padding: 12px 35px; cursor: pointer; font-weight: 900; font-size: 17px; color: #333;
         }
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+        .error-anim { animation: shake 0.3s; }
     </style>
 </head>
 <body>
@@ -339,31 +344,19 @@
             const input = document.getElementById('user-input');
             input.value = ''; 
             document.getElementById('pool-count').textContent = pool.length;
-            const card = document.getElementById('target-ru');
-            card.style.background = "url('ui_frame.png') no-repeat center";
-            card.style.backgroundSize = "100% 100%";
+            document.getElementById('target-ru').classList.remove('is-correct', 'is-wrong');
         }
 
         document.getElementById('user-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const card = document.getElementById('target-ru');
                 const input = document.getElementById('user-input');
-                
                 if (input.value.trim().toLowerCase() === currentWritingWord.en.toLowerCase()) {
-                    correctCount++; 
-                    speak(currentWritingWord.en);
-                    card.style.background = "url('card_en.png') no-repeat center";
-                    card.style.backgroundSize = "100% 100%";
-                    setTimeout(nextWritingWord, 600);
+                    correctCount++; speak(currentWritingWord.en);
+                    card.classList.add('is-correct'); setTimeout(nextWritingWord, 600);
                 } else { 
-                    wrongCount++; 
-                    card.style.background = "url('card_ru.png') no-repeat center";
-                    card.style.backgroundSize = "100% 100%";
-                    input.value = ''; // Очистка при ошибке
-                    setTimeout(() => {
-                        card.style.background = "url('ui_frame.png') no-repeat center";
-                        card.style.backgroundSize = "100% 100%";
-                    }, 600);
+                    wrongCount++; card.classList.add('is-wrong', 'error-anim');
+                    input.value = ''; setTimeout(() => card.classList.remove('is-wrong', 'error-anim'), 600);
                 }
                 document.getElementById('correct-count').textContent = correctCount;
                 document.getElementById('wrong-count').textContent = wrongCount;
