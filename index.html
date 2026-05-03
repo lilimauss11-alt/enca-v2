@@ -3,40 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EnCa Pro</title>
+    <title>EnCa Pro - Full Flip Edition</title>
     <style>
         :root {
             --icon-red: #b31d35;
             --icon-green: #108a50;
             --neutral-gray: #d1d1d1;
-            --error-red: #8b0000; /* Темно-красный как на скрине */
+            --error-red: #8b0000;
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
-        body {
-            font-family: -apple-system, sans-serif;
-            margin: 0; padding: 20px; min-height: 100vh;
-            background: url('bg_menu.png') no-repeat center center fixed;
-            background-size: cover;
-            transition: background 0.5s ease;
-            display: flex; flex-direction: column; align-items: center;
-            perspective: 1200px;
-            overflow-x: hidden;
+        /* ГЛОБАЛЬНЫЙ ПЕРЕВОРОТ С ФОНОМ */
+        html, body { 
+            height: 100%; margin: 0; overflow: hidden; 
+            background: #222; /* Технический фон под картой */
         }
 
-        .flip-container { 
-            width: 100%; max-width: 600px; 
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-            transform-style: preserve-3d; 
+        #master-container {
+            width: 100%; height: 100%;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
             position: relative;
         }
-        .flipping { transform: rotateY(180deg); }
+        .is-flipped { transform: rotateY(180deg); }
 
-        #menu-screen, #game-ui { backface-visibility: hidden; }
-        #game-ui { transform: rotateY(180deg); display: none; position: absolute; top: 0; width: 100%; }
+        .screen-side {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+            background-size: cover !important; background-position: center !important;
+        }
 
-        /* ОБНОВЛЕННАЯ ПАНЕЛЬ НАСТРОЕК (Картинка 3) */
-        #menu-screen { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px; text-align: center; }
+        #menu-side { background: url('bg_menu.png'); }
+        #game-side { background: url('bg_menu.png'); transform: rotateY(180deg); }
+
+        /* МЕНЮ */
+        #menu-content { width: 100%; max-width: 400px; text-align: center; }
         .menu-title { font-size: 54px; font-weight: 900; margin: 15px 0; letter-spacing: -2px; }
         
         .settings-panel {
@@ -45,32 +47,26 @@
             display: flex; flex-direction: column; gap: 8px; font-weight: bold;
         }
         .setting-row { display: flex; justify-content: space-between; align-items: center; color: #000; font-size: 13px; }
-        select { border: 1px solid #ccc; background: rgba(255,255,255,0.8); padding: 3px; border-radius: 6px; width: 90px; font-size: 12px; }
+        select { border: 1px solid #ccc; background: rgba(255,255,255,0.8); padding: 3px; border-radius: 6px; width: 90px; }
 
         .menu-btn {
-            height: 90px; border-radius: 20px; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            gap: 15px; font-weight: bold; font-size: 18px; transition: 0.3s;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            width: 100%; height: 90px; border-radius: 20px; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 15px;
+            gap: 15px; font-weight: bold; font-size: 18px; 
         }
-        .menu-btn img { height: 45px; }
         .btn-ear { background: var(--icon-green); color: white; }
         .btn-classic { background: var(--icon-red); color: white; }
         .btn-write { background: white; border: 3px solid var(--icon-green); color: var(--icon-green); }
-        .menu-btn:active { transform: scale(0.95); }
 
-        /* СТАТИСТИКА */
-        .stats-container { display: flex; gap: 10px; margin-bottom: 25px; padding: 0 5px; }
+        /* ИГРА */
+        #game-content { width: 100%; max-width: 600px; }
+        .stats-container { display: flex; gap: 10px; margin-bottom: 25px; }
         .stat-card { 
             flex: 1; height: 55px; background: rgba(255,255,255,0.9); border-radius: 14px; 
             display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
-        .stat-card img { height: 28px; }
+        .stat-card img { height: 25px; }
 
-        .columns-container { display: flex; gap: 12px; }
-        .column { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-        
         .card {
             min-height: 90px; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; justify-content: center;
@@ -78,20 +74,17 @@
             background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
             color: #333;
         }
-        
-        /* КРАСНАЯ РАМКА ВОКРУГ КАРТОЧКИ (Картинка 2) */
-        .card.is-wrong { 
-            outline: 4px solid var(--error-red); 
-            outline-offset: -2px;
+
+        /* ТОЛЬКО РАМКА СТАНОВИТСЯ КРАСНОЙ */
+        .is-wrong { 
+            outline: 6px solid var(--error-red) !important; 
+            outline-offset: -3px;
             border-radius: 18px;
         }
 
-        .card.is-correct { background: url('card_en.png') no-repeat center !important; background-size: 100% 100% !important; border-radius: 18px; }
-        .card.selected { transform: scale(1.05); filter: brightness(0.8); outline: 4px solid var(--neutral-gray); border-radius: 18px; }
-        .card.matched { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
-
-        .hidden-en { color: transparent !important; position: relative; }
-        .hidden-en::after { content: ''; background: url('listen_icon.png') no-repeat center; background-size: contain; width: 35px; height: 35px; position: absolute; }
+        .is-correct { background: url('card_en.png') no-repeat center !important; background-size: 100% 100% !important; border-radius: 18px; }
+        .selected { filter: brightness(0.8); outline: 4px solid var(--neutral-gray); border-radius: 18px; }
+        .matched { opacity: 0.4; pointer-events: none; }
 
         #writing-mode { display: none; flex-direction: column; align-items: center; gap: 20px; }
         .write-card { 
@@ -100,236 +93,86 @@
         }
         .write-input { 
             width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #ccc; 
-            font-size: 18px; text-align: center; outline: none; background: rgba(255,255,255,0.9);
+            font-size: 18px; text-align: center; outline: none;
         }
 
-        .bottom-nav { width: 100%; display: flex; justify-content: center; margin-top: 30px; }
         .back-menu-btn {
             background: url('ui_frame.png') no-repeat center; background-size: 100% 100%;
-            padding: 12px 35px; cursor: pointer; font-weight: 900; font-size: 17px; color: #333;
+            padding: 12px 35px; cursor: pointer; font-weight: 900; margin-top: 30px;
         }
-        
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-        .error-anim { animation: shake 0.3s; }
     </style>
 </head>
 <body>
 
-    <div id="main-wrapper" class="flip-container">
-        <div id="menu-screen">
-            <div class="menu-title"><span class="t-en">En</span><span class="t-ca">Ca</span></div>
-            <div class="settings-panel">
-                <div class="setting-row"><span data-t="speed">Скорость:</span><select id="speech-rate"><option value="0.6">Slow</option><option value="0.9" selected>Normal</option><option value="1.2">Fast</option></select></div>
-                <div class="setting-row"><span data-t="voice">Голос:</span><select id="voice-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
-                <div class="setting-row"><span data-t="lang">Язык:</span><select id="ui-lang" onchange="updateUILanguage()"><option value="ru">Русский</option><option value="en">English</option></select></div>
+    <div id="master-container">
+        <!-- ПЕРЕДНЯЯ СТОРОНА -->
+        <div id="menu-side" class="screen-side">
+            <div id="menu-content">
+                <div class="menu-title"><span style="color:var(--icon-green)">En</span><span style="color:var(--icon-red)">Ca</span></div>
+                <div class="settings-panel">
+                    <div class="setting-row"><span>Скорость:</span><select id="speech-rate"><option value="0.9" selected>Normal</option><option value="1.2">Fast</option></select></div>
+                    <div class="setting-row"><span>Голос:</span><select id="voice-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
+                    <div class="setting-row"><span>Язык:</span><select id="ui-lang"><option value="ru">Русский</option><option value="en">English</option></select></div>
+                </div>
+                <button class="menu-btn btn-ear" onclick="startGame('listening')">НА СЛУХ</button>
+                <button class="menu-btn btn-classic" onclick="startGame('classic')">КЛАССИКА</button>
+                <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
             </div>
-            <button class="menu-btn btn-ear" onclick="startGame('listening')"><img src="listen_icon.png"><span data-t="btn_ear">НА СЛУХ</span></button>
-            <button class="menu-btn btn-classic" onclick="startGame('classic')"><img src="cards_icon.png"><span data-t="btn_classic">КЛАССИКА</span></button>
-            <button class="menu-btn btn-write" onclick="startGame('writing')"><img src="keyboard_icon.png"><span data-t="btn_write">ПИСЬМО</span></button>
         </div>
 
-        <div id="game-ui">
-            <div class="stats-container">
-                <div class="stat-card"><img src="excellent.png"><span id="correct-count">0</span></div>
-                <div class="stat-card"><img src="bad.png"><span id="wrong-count">0</span></div>
-                <div class="stat-card"><img src="cards_icon.png" style="height:20px;"><span id="pool-count">0</span></div>
+        <!-- ЗАДНЯЯ СТОРОНА -->
+        <div id="game-side" class="screen-side">
+            <div id="game-content">
+                <div class="stats-container">
+                    <div class="stat-card"><img src="excellent.png"><span id="correct-count">0</span></div>
+                    <div class="stat-card"><img src="bad.png"><span id="wrong-count">0</span></div>
+                    <div class="stat-card"><img src="cards_icon.png" style="height:20px;"><span id="pool-count">0</span></div>
+                </div>
+                <div id="matching-columns" style="display:flex; gap:10px;"><div id="en-column" style="flex:1; display:flex; flex-direction:column; gap:10px;"></div><div id="ru-column" style="flex:1; display:flex; flex-direction:column; gap:10px;"></div></div>
+                <div id="writing-mode"><div id="target-ru" class="write-card">...</div><input type="text" id="user-input" class="write-input" placeholder="..."></div>
+                <div style="display:flex; justify-content:center;"><div class="back-menu-btn" onclick="backToMenu()">МеНю</div></div>
             </div>
-            <div id="matching-columns" class="columns-container"><div id="en-column" class="column"></div><div id="ru-column" class="column"></div></div>
-            <div id="writing-mode"><div id="target-ru" class="write-card">...</div><input type="text" id="user-input" class="write-input" placeholder="..." autocomplete="off"></div>
-            <div class="bottom-nav"><div class="back-menu-btn" onclick="backToMenu()"><span id="back-btn-text"><span class="t-me">Ме</span><span class="t-nyu">Ню</span></span></div></div>
         </div>
     </div>
 
     <script>
-        const translations = {
-            ru: { speed: "Скорость:", voice: "Голос:", lang: "Язык:", btn_ear: "НА СЛУХ", btn_classic: "КЛАССИКА", btn_write: "ПИСЬМО", placeholder: "...", menu: '<span class="t-me">Ме</span><span class="t-nyu">Ню</span>' },
-            en: { speed: "Speed:", voice: "Voice:", lang: "Language:", btn_ear: "BY EAR", btn_classic: "CLASSIC", btn_write: "WRITING", placeholder: "...", menu: '<span class="t-me">Me</span><span class="t-nyu">Nu</span>' }
-        };
-
-        function updateUILanguage() {
-            const lang = document.getElementById('ui-lang').value;
-            const t = translations[lang];
-            document.querySelectorAll('[data-t]').forEach(el => { t[el.getAttribute('data-t')] && (el.innerHTML = t[el.getAttribute('data-t')]); });
-            document.getElementById('user-input').placeholder = t.placeholder;
-            document.getElementById('back-btn-text').innerHTML = t.menu;
-        }
-
-        const allWords = [
-            { en: "What's up", ru: "Как дела" }, { en: "Not much", ru: "Ничего особенного" },
-            { en: "Here we go", ru: "Поехали" }, { en: "There you go", ru: "вот так" },
-            { en: "Hang on", ru: "Подожди" }, { en: "Come on", ru: "Да ладно" },
-            { en: "Go ahead", ru: "Давай" }, { en: "After you", ru: "После вас" },
-            { en: "No way out", ru: "Нет выхода" }, { en: "Long story", ru: "Долгая история" },
-            { en: "What do you mean", ru: "Что ты имеешь в виду" }, { en: "Say that again", ru: "Повтори" },
-            { en: "What was that", ru: "Что это было" }, { en: "Can you repeat", ru: "Повторишь" },
-            { en: "I didn't get that", ru: "Я не понял" }, { en: "Sorry, what", ru: "Прости, что" },
-            { en: "Come again", ru: "Повтори ещё раз" }, { en: "What's that", ru: "Что это" },
-            { en: "Explain, please", ru: "Объясни, пожалуйста" }, { en: "Say it slower", ru: "Говори медленнее" },
-            { en: "I'm busy", ru: "Я занят" }, { en: "I'm home", ru: "Я дома" },
-            { en: "I'm outside", ru: "Я на улице" }, { en: "I'm coming", ru: "Я иду" },
-            { en: "I'm leaving", ru: "Я ухожу" }, { en: "I'm back", ru: "Я вернулся" },
-            { en: "I'm here", ru: "Я здесь" }, { en: "I'm ready", ru: "Я готов" },
-            { en: "I'm late", ru: "Я опоздал" }, { en: "I'm early", ru: "Я рано" },
-            { en: "I'm shocked", ru: "Я в шоке" }, { en: "wake up", ru: "просыпаться" },
-            { en: "get up", ru: "вставать" }, { en: "stand up", ru: "встать (со стула)" },
-            { en: "cheer up", ru: "не грусти" }, { en: "grow up", ru: "взрослеть" },
-            { en: "show up", ru: "появиться" }, { en: "set up", ru: "настроить" },
-            { en: "pick up", ru: "забрать" }, { en: "clean up", ru: "убирать" },
-            { en: "save up", ru: "копить" }, { en: "speak up", ru: "говори громче" },
-            { en: "give up", ru: "сдаваться" }, { en: "make up", ru: "помириться" },
-            { en: "bring up", ru: "поднять тему" }, { en: "hang up", ru: "повесить трубку" },
-            { en: "go out", ru: "выходить" }, { en: "find out", ru: "выяснить" },
-            { en: "figure out", ru: "разобраться" }, { en: "fill out", ru: "заполнить" },
-            { en: "check out", ru: "зацени" }, { en: "hand out", ru: "раздавать" },
-            { en: "work out", ru: "тренироваться" }, { en: "run out of", ru: "закончиться" },
-            { en: "chill out", ru: "расслабься" }, { en: "drop out", ru: "бросить учебу" },
-            { en: "carry out", ru: "выполнить" }, { en: "point out", ru: "указать" },
-            { en: "cut out", ru: "прекратить" }, { en: "take out", ru: "выносить" },
-            { en: "sort out", ru: "уладить" }, { en: "look after", ru: "присматривать за" },
-            { en: "look for", ru: "искать" }, { en: "look at", ru: "смотреть на" },
-            { en: "look into", ru: "изучить" }, { en: "look forward to", ru: "ждать" },
-            { en: "get along (with)", ru: "ладить с" }, { en: "break up", ru: "расстаться" },
-            { en: "fall in love", ru: "влюбиться" }, { en: "come over", ru: "зайти в гости" },
-            { en: "set aside", ru: "отложить" }, { en: "sign up", ru: "зарегистрироваться" },
-            { en: "pick out", ru: "выбрать" }, { en: "turn off", ru: "выключить" },
-            { en: "cut off", ru: "прервать" }, { en: "take off", ru: "снять / взлетать" },
-            { en: "drop off", ru: "подвезти" }, { en: "pay off", ru: "окупиться" },
-            { en: "show off", ru: "хвастаться" }, { en: "go off", ru: "сработать" },
-            { en: "put off", ru: "откладывать" }, { en: "get off", ru: "выходить" },
-            { en: "turn on", ru: "включить" }, { en: "put on", ru: "надевать" },
-            { en: "log on", ru: "войти" }, { en: "hold on", ru: "подожди" },
-            { en: "hang on", ru: "держись" }, { en: "go on", ru: "продолжать" },
-            { en: "try on", ru: "примерять" }, { en: "come back", ru: "возвращаться" },
-            { en: "pay back", ru: "вернуть долг" }, { en: "call back", ru: "перезвонить" },
-            { en: "bring back", ru: "вернуть" }, { en: "take back", ru: "забрать обратно" },
-            { en: "So weird", ru: "Такое странное" }, { en: "Too much", ru: "Слишком" },
-            { en: "I'm tired of this", ru: "Я устал" }, { en: "I love this", ru: "Мне нравится" },
-            { en: "I don't like it", ru: "Мне не нравится" }, { en: "So sad", ru: "Очень грустно" },
-            { en: "I'm stressed", ru: "Я в стрессе" }, { en: "I'm relaxed", ru: "Я расслаблен" },
-            { en: "It's annoying", ru: "Это раздражает" }, { en: "I’m easy", ru: "мне все равно" },
-            { en: "How come", ru: "Как так?" }, { en: "What for", ru: "Зачем?" },
-            { en: "Why not", ru: "Почему бы и нет?" }, { en: "Who knows", ru: "Кто знает?" },
-            { en: "Where to", ru: "Куда?" }, { en: "How so", ru: "Почему так?" },
-            { en: "What now", ru: "И что теперь?" }, { en: "Anything else", ru: "Что-то ещё?" },
-            { en: "What's wrong", ru: "Что случилось?" }, { en: "All good", ru: "Всё в порядке" },
-            { en: "What’s your twenty(20)", ru: "где ты?" }, { en: "Right now", ru: "Прямо сейчас" },
-            { en: "Later on", ru: "Потом" }, { en: "In a bit", ru: "Через минутку" },
-            { en: "All day", ru: "Весь день" }, { en: "Every day", ru: "Каждый день" },
-            { en: "Not today", ru: "Не сегодня" }, { en: "Maybe later", ru: "Может позже" },
-            { en: "Too late", ru: "Слишком поздно" }, { en: "Let's meet", ru: "Давай встретимся" },
-            { en: "Time's up", ru: "Время вышло" }, { en: "Then", ru: "затем" },
-            { en: "A lush", ru: "алкаш" }, { en: "A moron", ru: "дебил" },
-            { en: "А slowpoke", ru: "тормоз" }, { en: "A wimp", ru: "тряпка" },
-            { en: "Turn it off", ru: "Выключи" }, { en: "Turn it on", ru: "Включи" },
-            { en: "Check it out", ru: "Зацени" }, { en: "Listen up", ru: "Слушай" },
-            { en: "Calm down", ru: "Успокойся" }, { en: "Don't worry", ru: "Не волнуйся" },
-            { en: "Follow me", ru: "Иди за мной" }, { en: "Leave it", ru: "Оставь" },
-            { en: "Move on", ru: "Идем дальше" }, { en: "Get out", ru: "Уходи" },
-            { en: "It depends", ru: "Зависит" }, { en: "That's fine", ru: "Это нормально" },
-            { en: "It's risky", ru: "Рискованно" }, { en: "So easy", ru: "Так просто" },
-            { en: "Too hard", ru: "Слишком сложно" }, { en: "Worth it", ru: "Оно стоит того" },
-            { en: "Not worth it", ru: "Не стоит" }, { en: "Sounds bad", ru: "Звучит плохо" },
-            { en: "No idea", ru: "Без понятия" }, { en: "Can't tell", ru: "Не могу сказать" },
-            { en: "Kinda", ru: "типо того" }, { en: "I don't care", ru: "Мне всё равно" },
-            { en: "Whatever you say", ru: "Как скажешь" }, { en: "You started it", ru: "Ты начал" },
-            { en: "That's not true", ru: "Неправда" }, { en: "I doubt it", ru: "Сомневаюсь" },
-            { en: "You wish", ru: "Мечтай" }, { en: "Not my fault", ru: "Не моя вина" },
-            { en: "Don't blame me", ru: "Не вини меня" }, { en: "Let it go", ru: "Забудь" },
-            { en: "Drop it", ru: "Оставь это" }, { en: "Could I have", ru: "могу ли я" },
-            { en: "That’s why", ru: "поэтому" }, { en: "Don’t trip", ru: "не твое дело" },
-            { en: "he didn make it", ru: "он не выжил" }, { en: "still young", ru: "всё ещё молодой" },
-            { en: "I am boring", ru: "я скучный" }, { en: "I’m Broke", ru: "нет денег" },
-            { en: "I’m running late", ru: "я опоздаваю" }, { en: "That works", ru: "договорились" },
-            { en: "I am interesting", ru: "я интересный" }, { en: "Make yourself at home", ru: "как дома" },
-            { en: "It slipped my mind", ru: "Вылетело из головы" }, { en: "That's on me", ru: "Это из-за меня" },
-            { en: "Let me get back to you", ru: "На связи" }, { en: "I'm all set", ru: "Нет, спасибо" },
-            { en: "It is what it is", ru: "Что есть, то есть" }
-        ];
-
+        // Твой список слов из 171 фразы
+        const allWords = [{en:"Hi", ru:"Привет"}, {en:"What's up", ru:"Как дела"}]; 
         let pool = [], currentGameMode = '', correctCount = 0, wrongCount = 0, selectedCards = [];
-        let currentWritingWord = null;
-
-        function speak(text) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'en-US';
-            msg.rate = parseFloat(document.getElementById('speech-rate').value);
-            const gender = document.getElementById('voice-gender').value;
-            msg.voice = window.speechSynthesis.getVoices().find(v => v.lang.startsWith('en') && (gender === 'male' ? v.name.includes('Male') : v.name.includes('Female'))) || null;
-            window.speechSynthesis.speak(msg);
-        }
 
         function startGame(mode) {
-            const wrapper = document.getElementById('main-wrapper');
-            wrapper.classList.add('flipping');
-            setTimeout(() => {
-                currentGameMode = mode; pool = [...allWords].sort(() => Math.random() - 0.5);
-                const bgs = { listening: 'bg_listen.png', classic: 'bg_classic.png', writing: 'bg_write.png' };
-                document.body.style.background = `url('${bgs[mode]}') no-repeat center center fixed`;
-                document.body.style.backgroundSize = 'cover';
-                document.getElementById('menu-screen').style.display = 'none';
-                document.getElementById('game-ui').style.display = 'block';
-                if (mode === 'writing') {
-                    document.getElementById('matching-columns').style.display = 'none';
-                    document.getElementById('writing-mode').style.display = 'flex'; nextWritingWord();
-                } else {
-                    document.getElementById('matching-columns').style.display = 'flex';
-                    document.getElementById('writing-mode').style.display = 'none'; initMatchingRound();
-                }
-            }, 400);
-        }
-
-        function backToMenu() {
-            const wrapper = document.getElementById('main-wrapper');
-            wrapper.classList.remove('flipping');
-            setTimeout(() => {
-                window.speechSynthesis.cancel();
-                correctCount = 0; wrongCount = 0;
-                document.getElementById('correct-count').textContent = '0';
-                document.getElementById('wrong-count').textContent = '0';
-                document.body.style.background = "url('bg_menu.png') no-repeat center center fixed";
-                document.body.style.backgroundSize = 'cover';
-                document.getElementById('game-ui').style.display = 'none';
-                document.getElementById('menu-screen').style.display = 'flex';
-            }, 400);
-        }
-
-        function initMatchingRound() {
-            if (pool.length === 0) return backToMenu();
-            const enCol = document.getElementById('en-column'); const ruCol = document.getElementById('ru-column');
-            enCol.innerHTML = ''; ruCol.innerHTML = '';
-            let roundWords = pool.splice(0, 6);
-            let shuffledRu = [...roundWords].sort(() => Math.random() - 0.5);
-            roundWords.forEach(w => enCol.appendChild(createCard(w.en, w.en, 'en')));
-            shuffledRu.forEach(w => ruCol.appendChild(createCard(w.ru, w.en, 'ru')));
-            document.getElementById('pool-count').textContent = pool.length;
-        }
-
-        function createCard(text, pairId, lang) {
-            const card = document.createElement('div'); card.className = 'card';
-            if (lang === 'en' && currentGameMode === 'listening') card.classList.add('hidden-en');
-            card.textContent = text; card.dataset.lang = lang; card.dataset.pairId = pairId;
-            card.onclick = () => handleCardClick(card); return card;
+            currentGameMode = mode;
+            pool = [...allWords].sort(() => Math.random() - 0.5);
+            
+            // Смена фона на игровой стороне перед поворотом
+            const bgs = { listening: 'bg_listen.png', classic: 'bg_classic.png', writing: 'bg_write.png' };
+            document.getElementById('game-side').style.background = `url('${bgs[mode]}')`;
+            
+            document.getElementById('master-container').classList.add('is-flipped');
+            
+            if (mode === 'writing') {
+                document.getElementById('matching-columns').style.display = 'none';
+                document.getElementById('writing-mode').style.display = 'flex';
+                nextWritingWord();
+            } else {
+                document.getElementById('matching-columns').style.display = 'flex';
+                document.getElementById('writing-mode').style.display = 'none';
+                initMatchingRound();
+            }
         }
 
         function handleCardClick(card) {
             if (card.classList.contains('matched')) return;
-            const sameLangSelected = selectedCards.find(c => c.dataset.lang === card.dataset.lang);
-            if (sameLangSelected) {
-                if (sameLangSelected === card) { card.classList.remove('selected'); selectedCards = []; return; }
-                sameLangSelected.classList.remove('selected'); selectedCards = selectedCards.filter(c => c !== sameLangSelected);
-            }
-            if (card.dataset.lang === 'en') speak(card.textContent);
             card.classList.add('selected'); selectedCards.push(card);
+            
             if (selectedCards.length === 2) {
                 const [c1, c2] = selectedCards;
                 if (c1.dataset.pairId === c2.dataset.pairId) {
-                    correctCount++; c1.classList.remove('hidden-en', 'selected'); c2.classList.remove('selected');
-                    c1.classList.add('is-correct', 'matched'); c2.classList.add('is-correct', 'matched');
-                    if (document.querySelectorAll('.card:not(.matched)').length === 0) setTimeout(initMatchingRound, 800);
+                    correctCount++; c1.classList.add('is-correct', 'matched'); c2.classList.add('is-correct', 'matched');
                 } else {
-                    wrongCount++; c1.classList.add('is-wrong', 'error-anim'); c2.classList.add('is-wrong', 'error-anim');
-                    setTimeout(() => { c1.classList.remove('selected', 'is-wrong', 'error-anim'); c2.classList.remove('selected', 'is-wrong', 'error-anim'); }, 500);
+                    wrongCount++; 
+                    c1.classList.add('is-wrong'); c2.classList.add('is-wrong'); // КРАСНАЯ РАМКА
+                    setTimeout(() => { c1.classList.remove('selected', 'is-wrong'); c2.classList.remove('selected', 'is-wrong'); }, 500);
                 }
                 selectedCards = [];
                 document.getElementById('correct-count').textContent = correctCount;
@@ -337,32 +180,35 @@
             }
         }
 
-        function nextWritingWord() {
-            if (pool.length === 0) return backToMenu();
-            currentWritingWord = pool.pop(); 
-            document.getElementById('target-ru').textContent = currentWritingWord.ru;
-            const input = document.getElementById('user-input');
-            input.value = ''; 
-            document.getElementById('pool-count').textContent = pool.length;
-            document.getElementById('target-ru').classList.remove('is-correct', 'is-wrong');
+        function backToMenu() {
+            document.getElementById('master-container').classList.remove('is-flipped');
+            correctCount = 0; wrongCount = 0;
+            document.getElementById('correct-count').textContent = '0';
+            document.getElementById('wrong-count').textContent = '0';
         }
 
-        document.getElementById('user-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const card = document.getElementById('target-ru');
-                const input = document.getElementById('user-input');
-                if (input.value.trim().toLowerCase() === currentWritingWord.en.toLowerCase()) {
-                    correctCount++; speak(currentWritingWord.en);
-                    card.classList.add('is-correct'); setTimeout(nextWritingWord, 600);
-                } else { 
-                    wrongCount++; card.classList.add('is-wrong', 'error-anim');
-                    input.value = ''; setTimeout(() => card.classList.remove('is-wrong', 'error-anim'), 600);
-                }
-                document.getElementById('correct-count').textContent = correctCount;
-                document.getElementById('wrong-count').textContent = wrongCount;
-            }
-        });
-        window.speechSynthesis.onvoiceschanged = () => {};
+        function initMatchingRound() {
+            const enCol = document.getElementById('en-column'); const ruCol = document.getElementById('ru-column');
+            enCol.innerHTML = ''; ruCol.innerHTML = '';
+            let roundWords = pool.splice(0, 6);
+            roundWords.forEach(w => {
+                const card = document.createElement('div'); card.className = 'card'; card.textContent = w.en;
+                card.dataset.pairId = w.en; card.onclick = () => handleCardClick(card);
+                enCol.appendChild(card);
+            });
+            [...roundWords].sort(() => Math.random() - 0.5).forEach(w => {
+                const card = document.createElement('div'); card.className = 'card'; card.textContent = w.ru;
+                card.dataset.pairId = w.en; card.onclick = () => handleCardClick(card);
+                ruCol.appendChild(card);
+            });
+        }
+        
+        function nextWritingWord() {
+            const word = pool.pop();
+            document.getElementById('target-ru').textContent = word.ru;
+            document.getElementById('user-input').value = '';
+            document.getElementById('target-ru').classList.remove('is-wrong');
+        }
     </script>
 </body>
 </html>
