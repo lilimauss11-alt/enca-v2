@@ -10,6 +10,7 @@
             --icon-green: #108a50;
             --light-green: rgba(144, 238, 144, 0.7);
             --light-red: rgba(255, 182, 193, 0.7);
+            --neutral-gray: #d1d1d1;
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
@@ -20,13 +21,23 @@
             background-size: cover;
             transition: background 0.5s ease;
             display: flex; flex-direction: column; align-items: center;
-            perspective: 1000px;
+            perspective: 1200px;
             overflow-x: hidden;
         }
 
-        .flip-container { width: 100%; max-width: 600px; transition: transform 0.6s; transform-style: preserve-3d; }
+        /* ОДИН ПЕРЕВОРОТ КАРТЫ */
+        .flip-container { 
+            width: 100%; max-width: 600px; 
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            transform-style: preserve-3d; 
+            position: relative;
+        }
         .flipping { transform: rotateY(180deg); }
 
+        #menu-screen, #game-ui { backface-visibility: hidden; }
+        #game-ui { transform: rotateY(180deg); display: none; position: absolute; top: 0; width: 100%; }
+
+        /* ЦВЕТНОЕ МЕНЮ В СЕРЫХ РАМКАХ */
         #menu-screen { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px; text-align: center; }
         .menu-title { font-size: 54px; font-weight: 900; margin: 20px 0; letter-spacing: -2px; }
         .t-en, .t-me { color: var(--icon-green); }
@@ -45,12 +56,18 @@
             display: flex; align-items: center; justify-content: center;
             gap: 15px; font-weight: bold; font-size: 18px; transition: 0.3s;
             background: url('ui_frame.png') no-repeat center; background-size: 100% 100%;
-            color: #333;
+            position: relative; overflow: hidden;
         }
+        .menu-btn::before { content: ''; position: absolute; top: 10%; left: 5%; right: 5%; bottom: 10%; border-radius: 15px; z-index: 0; opacity: 0.8; }
+        .btn-ear::before { background: var(--icon-green); }
+        .btn-classic::before { background: var(--icon-red); }
+        .btn-write::before { background: white; border: 2px solid var(--icon-green); }
+        
+        .menu-btn span, .menu-btn img { z-index: 1; color: white; }
+        .btn-write span { color: var(--icon-green); }
         .menu-btn img { height: 45px; }
-        .menu-btn:active { transform: scale(0.95); filter: brightness(0.9); }
 
-        #game-ui { display: none; width: 100%; max-width: 600px; }
+        /* ИГРОВОЙ ИНТЕРФЕЙС */
         .stats-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-card { 
             flex: 1; height: 50px; background: rgba(255,255,255,0.9); border-radius: 12px; 
@@ -68,9 +85,11 @@
             background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
             color: #333;
         }
-        .card.is-correct { background: var(--light-green) !important; border: 2px solid var(--icon-green); border-radius: 18px; color: #000 !important; }
-        .card.is-wrong { background: var(--light-red) !important; border: 2px solid var(--icon-red); border-radius: 18px; color: #000 !important; }
-        .card.selected { transform: scale(1.05); filter: brightness(1.2); outline: 3px solid var(--icon-green); border-radius: 18px; }
+        /* НЕЙТРАЛЬНЫЙ ВЫБОР (СЕРЫЙ) */
+        .card.selected { transform: scale(1.05); filter: brightness(0.8); outline: 4px solid var(--neutral-gray); border-radius: 18px; }
+        
+        .card.is-correct { background: var(--light-green) !important; border: 2px solid var(--icon-green); border-radius: 18px; }
+        .card.is-wrong { background: var(--light-red) !important; border: 2px solid var(--icon-red); border-radius: 18px; }
         .card.matched { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
 
         .hidden-en { color: transparent !important; position: relative; }
@@ -88,15 +107,12 @@
             background: url('ui_frame.png') no-repeat center; background-size: 100% 100%;
             padding: 15px 40px; cursor: pointer; font-weight: 900; font-size: 18px; color: #333;
         }
-
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .error-anim { animation: shake 0.4s; }
     </style>
 </head>
 <body>
 
     <div id="main-wrapper" class="flip-container">
-        <!-- МЕНЮ -->
+        <!-- ЛИЦЕВАЯ СТОРОНА: МЕНЮ -->
         <div id="menu-screen">
             <div class="menu-title"><span class="t-en">En</span><span class="t-ca">Ca</span></div>
             <div class="settings-panel">
@@ -104,12 +120,12 @@
                 <div class="setting-row"><span data-t="voice">Голос:</span><select id="voice-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
                 <div class="setting-row"><span data-t="lang">Язык:</span><select id="ui-lang" onchange="updateUILanguage()"><option value="ru">Русский</option><option value="en">English</option></select></div>
             </div>
-            <button class="menu-btn" onclick="startGame('listening')"><img src="listen_icon.png"><span data-t="btn_ear">НА СЛУХ</span></button>
-            <button class="menu-btn" onclick="startGame('classic')"><img src="cards_icon.png"><span data-t="btn_classic">КЛАССИКА</span></button>
-            <button class="menu-btn" onclick="startGame('writing')"><img src="keyboard_icon.png"><span data-t="btn_write">ПИСЬМО</span></button>
+            <button class="menu-btn btn-ear" onclick="startGame('listening')"><img src="listen_icon.png"><span data-t="btn_ear">НА СЛУХ</span></button>
+            <button class="menu-btn btn-classic" onclick="startGame('classic')"><img src="cards_icon.png"><span data-t="btn_classic">КЛАССИКА</span></button>
+            <button class="menu-btn btn-write" onclick="startGame('writing')"><img src="keyboard_icon.png"><span data-t="btn_write">ПИСЬМО</span></button>
         </div>
 
-        <!-- ИГРА -->
+        <!-- ОБРАТНАЯ СТОРОНА: ИГРА -->
         <div id="game-ui">
             <div class="stats-container">
                 <div class="stat-card"><img src="excellent.png"><span id="correct-count">0</span></div>
@@ -123,6 +139,7 @@
     </div>
 
     <script>
+        // Логика перевода и игры остается полной, как в прошлых версиях
         const translations = {
             ru: { speed: "Скорость:", voice: "Голос:", lang: "Язык:", btn_ear: "НА СЛУХ", btn_classic: "КЛАССИКА", btn_write: "ПИСЬМО", placeholder: "Печатай здесь...", menu: '<span class="t-me">Ме</span><span class="t-nyu">Ню</span>' },
             en: { speed: "Speed:", voice: "Voice:", lang: "Language:", btn_ear: "BY EAR", btn_classic: "CLASSIC", btn_write: "WRITING", placeholder: "Type here...", menu: '<span class="t-me">Me</span><span class="t-nyu">Nu</span>' }
@@ -131,10 +148,7 @@
         function updateUILanguage() {
             const lang = document.getElementById('ui-lang').value;
             const t = translations[lang];
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (t[key]) el.innerHTML = t[key];
-            });
+            document.querySelectorAll('[data-t]').forEach(el => { t[el.getAttribute('data-t')] && (el.innerHTML = t[el.getAttribute('data-t')]); });
             document.getElementById('user-input').placeholder = t.placeholder;
             document.getElementById('back-btn-text').innerHTML = t.menu;
         }
@@ -180,7 +194,7 @@
             { en: "cut off", ru: "прервать" }, { en: "take off", ru: "снять / взлетать" },
             { en: "drop off", ru: "подвезти" }, { en: "pay off", ru: "окупиться" },
             { en: "show off", ru: "хвастаться" }, { en: "go off", ru: "сработать" },
-            { en: "put off", ru: "откладывать" }, { en: "get off", ru: "выходить (транспорт)" },
+            { en: "put off", ru: "откладывать" }, { en: "get off", ru: "выходить" },
             { en: "turn on", ru: "включить" }, { en: "put on", ru: "надевать" },
             { en: "log on", ru: "войти" }, { en: "hold on", ru: "подожди" },
             { en: "hang on", ru: "держись" }, { en: "go on", ru: "продолжать" },
@@ -224,7 +238,7 @@
             { en: "That’s why", ru: "поэтому" }, { en: "Don’t trip", ru: "не твое дело" },
             { en: "he didn make it", ru: "он не выжил" }, { en: "still young", ru: "всё ещё молодой" },
             { en: "I am boring", ru: "я скучный" }, { en: "I’m Broke", ru: "нет денег" },
-            { en: "I’m running late", ru: "я опоздываю" }, { en: "That works", ru: "договорились" },
+            { en: "I’m running late", ru: "я опоздаваю" }, { en: "That works", ru: "договорились" },
             { en: "I am interesting", ru: "я интересный" }, { en: "Make yourself at home", ru: "как дома" },
             { en: "It slipped my mind", ru: "Вылетело из головы" }, { en: "That's on me", ru: "Это из-за меня" },
             { en: "Let me get back to you", ru: "На связи" }, { en: "I'm all set", ru: "Нет, спасибо" },
@@ -260,13 +274,12 @@
                     document.getElementById('matching-columns').style.display = 'flex';
                     document.getElementById('writing-mode').style.display = 'none'; initMatchingRound();
                 }
-                wrapper.classList.remove('flipping');
-            }, 300);
+            }, 400);
         }
 
         function backToMenu() {
             const wrapper = document.getElementById('main-wrapper');
-            wrapper.classList.add('flipping');
+            wrapper.classList.remove('flipping');
             setTimeout(() => {
                 window.speechSynthesis.cancel();
                 correctCount = 0; wrongCount = 0;
@@ -276,8 +289,7 @@
                 document.body.style.backgroundSize = 'cover';
                 document.getElementById('game-ui').style.display = 'none';
                 document.getElementById('menu-screen').style.display = 'flex';
-                wrapper.classList.remove('flipping');
-            }, 300);
+            }, 400);
         }
 
         function initMatchingRound() {
@@ -342,7 +354,6 @@
                 document.getElementById('wrong-count').textContent = wrongCount;
             }
         });
-        
         window.speechSynthesis.onvoiceschanged = () => {};
     </script>
 </body>
