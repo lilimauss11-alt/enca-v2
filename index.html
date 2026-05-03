@@ -14,7 +14,7 @@
         body {
             font-family: -apple-system, sans-serif;
             margin: 0; padding: 20px; min-height: 100vh;
-            background: url('bg_menu.jpg') no-repeat center center fixed;
+            background: url('bg_menu.png') no-repeat center center fixed;
             background-size: cover;
             transition: background 0.5s ease;
             display: flex; flex-direction: column; align-items: center;
@@ -88,7 +88,7 @@
     </style>
 </head>
 <body>
-
+    <!-- Содержимое body и script остаются такими же, как в прошлом сообщении -->
     <div id="menu-screen">
         <div class="menu-title"><span class="t-en">En</span><span class="t-ca">Ca</span></div>
         <div class="settings-panel">
@@ -112,6 +112,7 @@
     </div>
 
     <script>
+        // Твой список слов и вся логика игры (полный код из прошлого сообщения)
         const allWords = [
             { en: "What's up", ru: "Как дела" }, { en: "Not much", ru: "Ничего особенного" },
             { en: "Here we go", ru: "Поехали" }, { en: "There you go", ru: "вот так" },
@@ -153,7 +154,7 @@
             { en: "cut off", ru: "прервать" }, { en: "take off", ru: "снять / взлетать" },
             { en: "drop off", ru: "подвезти" }, { en: "pay off", ru: "окупиться" },
             { en: "show off", ru: "хвастаться" }, { en: "go off", ru: "сработать" },
-            { en: "put off", ru: "откладывать" }, { en: "get off", ru: "выходить (транспорт)" },
+            { en: "put off", ru: "откладывать" }, { en: "get off", ru: "выходить" },
             { en: "turn on", ru: "включить" }, { en: "put on", ru: "надевать" },
             { en: "log on", ru: "войти" }, { en: "hold on", ru: "подожди" },
             { en: "hang on", ru: "держись" }, { en: "go on", ru: "продолжать" },
@@ -219,7 +220,7 @@
         function startGame(mode) {
             currentGameMode = mode; correctCount = 0; wrongCount = 0;
             pool = [...allWords].sort(() => Math.random() - 0.5);
-            const bgs = { listening: 'bg_listen.jpg', classic: 'bg_classic.jpg', writing: 'bg_write.jpg' };
+            const bgs = { listening: 'bg_listen.png', classic: 'bg_classic.png', writing: 'bg_write.png' };
             document.body.style.background = `url('${bgs[mode]}') no-repeat center center fixed`;
             document.body.style.backgroundSize = 'cover';
             document.getElementById('menu-screen').style.display = 'none';
@@ -235,7 +236,7 @@
 
         function backToMenu() {
             window.speechSynthesis.cancel();
-            document.body.style.background = "url('bg_menu.jpg') no-repeat center center fixed";
+            document.body.style.background = "url('bg_menu.png') no-repeat center center fixed";
             document.body.style.backgroundSize = 'cover';
             document.getElementById('game-ui').style.display = 'none';
             document.getElementById('menu-screen').style.display = 'flex';
