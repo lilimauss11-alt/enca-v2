@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>EnCa Pro - Clean Edition</title>
+    <title>EnCa Pro</title>
     <style>
         :root {
             --icon-red: #b31d35;
@@ -13,71 +13,63 @@
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
-        /* ЧИНЮ ФОН НА ВЕСЬ ЭКРАН */
         html, body { 
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            overflow: hidden; 
+            margin: 0; padding: 0; min-height: 100vh; width: 100%;
             font-family: -apple-system, sans-serif;
-            background: #000; /* Запасной фон */
+            background: #000;
         }
 
+        /* ПОЛНОЕ ПОКРЫТИЕ ФОНОМ */
         #body-tag {
-            background-size: cover !important; 
-            background-position: center !important;
-            background-attachment: fixed;
-            height: 100%; width: 100%;
+            background: url('bg_menu.png') no-repeat center center fixed;
+            background-size: cover !important;
+            min-height: 100vh;
+            width: 100%;
         }
 
-        #app-container {
-            position: relative; width: 100%; height: 100%;
-        }
+        #app-container { position: relative; width: 100%; min-height: 100vh; }
 
         .screen {
-            position: absolute; width: 100%; height: 100%;
+            position: absolute; width: 100%; min-height: 100vh;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; align-items: center; 
-            padding: 20px; padding-top: 50px; /* Отступ сверху */
-            background-size: cover !important; background-position: center !important;
+            padding: 20px; padding-top: 50px;
         }
 
-        /* НАЧАЛЬНОЕ ПОЛОЖЕНИЕ ( Slide Effect ) */
         #menu-screen { z-index: 2; transform: translateY(0); }
         #game-screen { z-index: 1; transform: translateY(100%); }
-
-        /* КОГДА ИГРА АКТИВНА */
         .game-active #menu-screen { transform: translateY(-100%); }
         .game-active #game-screen { transform: translateY(0); z-index: 3; }
 
-        /* НОВАЯ СЕРАЯ КАРТОЧКА НАСТРОЕК (как игровые кнопки) */
+        /* ВЕРНУЛ РАЗМЕР ЗАГОЛОВКА */
+        .menu-title { font-size: 54px; font-weight: 900; margin: 20px 0; letter-spacing: -2px; }
+        .t-green { color: var(--icon-green); }
+        .t-red { color: var(--icon-red); }
+
         .settings-card {
-            width: 100%; max-width: 440px; /* Сделал шире */
+            width: 100%; max-width: 440px;
             background: #fff; border-radius: 20px;
-            padding: 25px 30px; margin: 20px 0; margin-bottom: 30px;
+            padding: 25px 30px; margin-bottom: 30px;
             display: flex; flex-direction: column; gap: 15px; font-weight: bold;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Тень как у кнопок */
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .setting-row { display: flex; justify-content: space-between; align-items: center; color: #000; font-size: 16px; }
-        select { border: 1px solid #ccc; background: #f9f9f9; padding: 6px; border-radius: 8px; width: 120px; font-size: 14px; }
+        select { border: 1px solid #ccc; background: #f9f9f9; padding: 6px; border-radius: 8px; width: 120px; }
 
-        /* ЦВЕТНЫЕ КНОПКИ МЕНЮ */
         .menu-btn {
             width: 100%; max-width: 400px; height: 90px; border-radius: 20px; border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
             gap: 15px; font-weight: bold; font-size: 19px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: 0.2s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .btn-ear { background: var(--icon-green); color: white; }
         .btn-classic { background: var(--icon-red); color: white; }
         .btn-write { background: white; border: 3px solid var(--icon-green); color: var(--icon-green); }
-        .menu-btn:active { transform: scale(0.97); }
 
-        /* ИГРА */
         .stats-container { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; max-width: 600px; }
         .stat-card { 
             flex: 1; height: 55px; background: rgba(255,255,255,0.9); border-radius: 14px; 
             display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
         .stat-card img { height: 25px; }
 
@@ -89,47 +81,28 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
 
-        /* ОШИБКА И ТРЯСКА */
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-8px); } 80% { transform: translateX(8px); } }
-        .is-wrong { 
-            outline: 6px solid var(--error-red) !important; 
-            outline-offset: -3px;
-            animation: shake 0.4s;
-        }
-
+        .is-wrong { outline: 6px solid var(--error-red) !important; outline-offset: -3px; animation: shake 0.4s; }
         .is-correct { background: var(--icon-green) !important; color: white !important; }
         .selected { outline: 4px solid var(--neutral-gray); }
         .matched { opacity: 0.4; pointer-events: none; }
 
-        #writing-mode { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
-        .write-card { 
-            width: 100%; max-width: 500px; padding: 50px 20px; 
-            background: #fff; border-radius: 20px;
-            text-align: center; font-size: 26px; font-weight: bold; color: #000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
-        .write-input { 
-            width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; border: 2px solid #ccc; 
-            font-size: 20px; text-align: center; outline: none; background: #fff;
-        }
-
         .back-menu-btn {
             background: #fff; padding: 15px 40px; cursor: pointer; font-weight: 900; 
             margin-top: 40px; border-radius: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            font-size: 18px;
         }
         
         .hidden-en { color: transparent !important; position: relative; }
         .hidden-en::after { content: '?'; color: #888; font-size: 30px; position: absolute; }
     </style>
 </head>
-<body id="body-tag" style="background: url('bg_menu.png');">
+<body id="body-tag">
 
     <div id="app-container">
-        <!-- ЭКРАН МЕНЮ -->
         <div id="menu-screen" class="screen">
-            <div class="menu-title"><span style="color:var(--icon-green)">En</span><span style="color:var(--icon-red)">Ca</span></div>
+            <div class="menu-title"><span class="t-green">En</span><span class="t-red">Ca</span></div>
             
-            <!-- НОВАЯ СЕРАЯ КАРТОЧКА НАСТРОЕК -->
             <div class="settings-card">
                 <div class="setting-row"><span>Скорость:</span><select id="speech-rate"><option value="0.9" selected>Normal</option><option value="1.2">Fast</option></select></div>
                 <div class="setting-row"><span>Голос:</span><select id="voice-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
@@ -141,7 +114,6 @@
             <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
         </div>
 
-        <!-- ЭКРАН ИГРЫ -->
         <div id="game-screen" class="screen">
             <div id="game-content" style="width:100%; display:flex; flex-direction:column; align-items:center;">
                 <div class="stats-container">
@@ -155,41 +127,30 @@
                     <div id="ru-column" style="flex:1; display:flex; flex-direction:column; gap:10px;"></div>
                 </div>
 
-                <div id="writing-mode">
-                    <div id="target-ru" class="write-card">...</div>
-                    <input type="text" id="user-input" class="write-input" placeholder="Type here...">
+                <div id="writing-mode" style="display:none; width:100%; flex-direction:column; align-items:center; gap:20px;">
+                    <div id="target-ru" style="width:100%; max-width:500px; padding:50px 20px; background:#fff; border-radius:20px; text-align:center; font-size:26px; font-weight:bold; box-shadow:0 10px 20px rgba(0,0,0,0.15);">...</div>
+                    <input type="text" id="user-input" style="width:100%; max-width:500px; padding:20px; border-radius:15px; border:2px solid #ccc; font-size:20px; text-align:center; outline:none;" placeholder="...">
                 </div>
 
-                <div class="back-menu-btn" onclick="backToMenu()">МеНю</div>
+                <div class="back-menu-btn" onclick="backToMenu()"><span class="t-green">Ме</span><span class="t-red">Ню</span></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Тестовый набор
-        const allWords = [
-            { en: "What's up", ru: "Как дела" }, 
-            { en: "Not much", ru: "Ничего особенного" }
-        ];
-
+        const allWords = [{en: "What's up", ru: "Как дела"}, {en: "Not much", ru: "Ничего особенного"}];
         let pool = [], currentGameMode = '', correctCount = 0, wrongCount = 0, selectedCards = [];
-        let currentWritingWord = null;
 
         function updateLang() {
             const lang = document.getElementById('ui-lang').value;
-            document.querySelector('.back-menu-btn').textContent = lang === 'ru' ? 'МеНю' : 'Menu';
+            const btn = document.querySelector('.back-menu-btn');
+            btn.innerHTML = lang === 'ru' ? '<span class="t-green">Ме</span><span class="t-red">Ню</span>' : '<span class="t-green">Me</span><span class="t-red">Nu</span>';
         }
 
         function startGame(mode) {
             currentGameMode = mode;
             pool = [...allWords].sort(() => Math.random() - 0.5);
-            
-            // Смена фона на игровой стороне
-            const bgs = { listening: 'bg_listen.png', classic: 'bg_classic.png', writing: 'bg_write.png' };
-            // document.getElementById('game-screen').style.background = `url('${bgs[mode]}')`; // Временно закомментил, так как у тебя png
-            
             document.getElementById('body-tag').classList.add('game-active');
-            
             if (mode === 'writing') {
                 document.getElementById('matching-columns').style.display = 'none';
                 document.getElementById('writing-mode').style.display = 'flex';
@@ -203,15 +164,12 @@
 
         function handleCardClick(card) {
             if (card.classList.contains('matched')) return;
-            
             const sameLangSelected = selectedCards.find(c => c.dataset.lang === card.dataset.lang);
             if (sameLangSelected) {
                 sameLangSelected.classList.remove('selected');
                 selectedCards = selectedCards.filter(c => c !== sameLangSelected);
             }
-
             card.classList.add('selected'); selectedCards.push(card);
-            
             if (selectedCards.length === 2) {
                 const [c1, c2] = selectedCards;
                 if (c1.dataset.pairId === c2.dataset.pairId) {
@@ -223,59 +181,34 @@
                 selectedCards = [];
                 document.getElementById('correct-count').textContent = correctCount;
                 document.getElementById('wrong-count').textContent = wrongCount;
-                if (document.querySelectorAll('.card:not(.matched)').length === 0 && pool.length > 0) setTimeout(initMatchingRound, 800);
             }
         }
 
         function initMatchingRound() {
             const enCol = document.getElementById('en-column'); const ruCol = document.getElementById('ru-column');
             enCol.innerHTML = ''; ruCol.innerHTML = '';
-            let round = pool.splice(0, 6);
-            round.forEach(w => {
+            pool.forEach(w => {
                 const card = document.createElement('div'); card.className = 'card';
                 if (currentGameMode === 'listening') card.classList.add('hidden-en');
                 card.textContent = w.en; card.dataset.pairId = w.en; card.dataset.lang = 'en';
                 card.onclick = () => handleCardClick(card); enCol.appendChild(card);
             });
-            [...round].sort(() => Math.random() - 0.5).forEach(w => {
+            [...pool].sort(() => Math.random() - 0.5).forEach(w => {
                 const card = document.createElement('div'); card.className = 'card';
                 card.textContent = w.ru; card.dataset.pairId = w.en; card.dataset.lang = 'ru';
                 card.onclick = () => handleCardClick(card); ruCol.appendChild(card);
             });
-            document.getElementById('pool-count').textContent = pool.length;
         }
-
-        function nextWritingWord() {
-            if (pool.length === 0) return backToMenu();
-            currentWritingWord = pool.pop();
-            document.getElementById('target-ru').textContent = currentWritingWord.ru;
-            document.getElementById('user-input').value = '';
-            document.getElementById('target-ru').classList.remove('is-wrong', 'is-correct');
-            document.getElementById('pool-count').textContent = pool.length;
-            document.getElementById('user-input').focus();
-        }
-
-        document.getElementById('user-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const card = document.getElementById('target-ru');
-                if (e.target.value.trim().toLowerCase() === currentWritingWord.en.toLowerCase()) {
-                    correctCount++; card.classList.add('is-correct'); setTimeout(nextWritingWord, 600);
-                } else {
-                    wrongCount++; card.classList.add('is-wrong');
-                    setTimeout(() => card.classList.remove('is-wrong'), 500);
-                }
-                document.getElementById('correct-count').textContent = correctCount;
-                document.getElementById('wrong-count').textContent = wrongCount;
-            }
-        });
 
         function backToMenu() {
             document.getElementById('body-tag').classList.remove('game-active');
-            setTimeout(() => {
-                correctCount = 0; wrongCount = 0;
-                document.getElementById('correct-count').textContent = '0';
-                document.getElementById('wrong-count').textContent = '0';
-            }, 500);
+            setTimeout(() => { correctCount = 0; wrongCount = 0; }, 500);
+        }
+
+        function nextWritingWord() {
+            const word = pool.pop();
+            document.getElementById('target-ru').textContent = word.ru;
+            document.getElementById('user-input').value = '';
         }
     </script>
 </body>
