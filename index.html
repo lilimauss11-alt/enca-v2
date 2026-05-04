@@ -120,26 +120,13 @@
         }
     </style>
 </head>
-<body id="body-tag" style="background-image: url('bg_menu.png');">
-
-    <div id="app-container">
-        <div id="menu-screen" class="screen">
-            <div class="menu-title"><span class="t-green">En</span><span class="t-red">Ca</span></div>
-            <div class="settings-card">
-                <div class="setting-row"><span id="lbl-speed">Скорость:</span>
-                    <select id="speech-rate"><option value="0.9" selected>Обычная</option><option value="1.2">Быстрая</option></select>
-                </div>
-                <div class="setting-row"><span id="lbl-voice">Голос:</span>
-                    <select id="voice-gender"><option value="female">Женский</option><option value="male">Мужской</option></select>
-                </div>
-                <div class="setting-row"><span id="lbl-lang">Язык:</span>
-                    <select id="ui-lang" onchange="updateLang()"><option value="ru" selected>Русский</option><option value="en">English</option></select>
-                </div>
-            </div>
-            <button class="menu-btn btn-ear" onclick="startGame('listening')">НА СЛУХ</button>
-            <button class="menu-btn btn-classic" onclick="startGame('classic')">КЛАССИКА</button>
-            <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
-        </div>
+<!-- Иконка для iPhone/iPad на рабочем столе -->
+<link rel="apple-touch-icon" href="icon.png">
+<!-- Название приложения под иконкой -->
+<meta name="apple-mobile-web-app-title" content="EnCa">
+<!-- Позволяет приложению открываться на весь экран без строки браузера -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
         <div id="game-screen" class="screen">
             <div id="game-content" style="width:100%; display:flex; flex-direction:column; align-items:center;">
