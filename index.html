@@ -20,13 +20,16 @@
             font-family: -apple-system, sans-serif;
         }
 
+        /* УБРАЛ РАСТЯЖЕНИЕ, ОСТАВИЛ ЧИСТОЕ 9:16 */
         #body-tag {
-            background: url('bg_menu.png') no-repeat center center fixed;
-            background-size: cover !important;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
             height: 100vh;
             width: 100%;
             position: fixed;
             top: 0; left: 0;
+            transition: background-image 0.3s ease-in-out;
         }
 
         #app-container { 
@@ -109,7 +112,7 @@
         }
     </style>
 </head>
-<body id="body-tag">
+<body id="body-tag" style="background-image: url('bg_menu.png');">
 
     <div id="app-container">
         <div id="menu-screen" class="screen">
@@ -219,6 +222,13 @@
         function startGame(mode) {
             currentGameMode = mode;
             pool = [...allWords].sort(() => Math.random() - 0.5);
+            
+            // СМЕНА ФОНА ДЛЯ КАЖДОЙ ИГРЫ
+            const body = document.getElementById('body-tag');
+            if (mode === 'listening') body.style.backgroundImage = "url('bg_listen.png')";
+            else if (mode === 'classic') body.style.backgroundImage = "url('bg_classic.png')";
+            else if (mode === 'writing') body.style.backgroundImage = "url('bg_write.png')";
+
             document.getElementById('body-tag').classList.add('game-active');
             if (mode === 'writing') {
                 document.getElementById('matching-columns').style.display = 'none';
@@ -300,6 +310,8 @@
         });
 
         function backToMenu() {
+            // ВОЗВРАТ К МЕНЮШНОМУ ФОНУ
+            document.getElementById('body-tag').style.backgroundImage = "url('bg_menu.png')";
             document.getElementById('body-tag').classList.remove('game-active');
             setTimeout(() => { correctCount = 0; wrongCount = 0; }, 500);
         }
