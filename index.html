@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>EnCa Pro</title>
+    <title>EnCa Pro - Full Version</title>
     <style>
         :root {
             --icon-red: #b31d35;
@@ -87,7 +87,6 @@
 
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
         
-        /* ЦВЕТНОЕ ОБРАМЛЕНИЕ */
         .is-wrong { 
             outline: 6px solid var(--error-red) !important; 
             outline-offset: -3px;
@@ -174,7 +173,98 @@
     </div>
 
     <script>
-        const allWords = [{en: "What's up", ru: "Как дела"}, {en: "Not much", ru: "Ничего особенного"}];
+        const allWords = [
+            { en: "What's up", ru: "Как дела" }, { en: "Not much", ru: "Ничего особенного" },
+            { en: "Here we go", ru: "Поехали" }, { en: "There you go", ru: "вот так" },
+            { en: "Hang on", ru: "Подожди" }, { en: "Come on", ru: "Да ладно" },
+            { en: "Go ahead", ru: "Давай" }, { en: "After you", ru: "После вас" },
+            { en: "No way out", ru: "Нет выхода" }, { en: "Long story", ru: "Долгая история" },
+            { en: "What do you mean", ru: "Что ты имеешь в виду" }, { en: "Say that again", ru: "Повтори" },
+            { en: "What was that", ru: "Что это было" }, { en: "Can you repeat", ru: "Повторишь" },
+            { en: "I didn't get that", ru: "Я не понял" }, { en: "Sorry, what", ru: "Прости, что" },
+            { en: "Come again", ru: "Повтори ещё раз" }, { en: "What's that", ru: "Что это" },
+            { en: "Explain, please", ru: "Объясни, пожалуйста" }, { en: "Say it slower", ru: "Говори медленнее" },
+            { en: "I'm busy", ru: "Я занят" }, { en: "I'm home", ru: "Я дома" },
+            { en: "I'm outside", ru: "Я на улице" }, { en: "I'm coming", ru: "Я иду" },
+            { en: "I'm leaving", ru: "Я ухожу" }, { en: "I'm back", ru: "Я вернулся" },
+            { en: "I'm here", ru: "Я здесь" }, { en: "I'm ready", ru: "Я готов" },
+            { en: "I'm late", ru: "Я опоздал" }, { en: "I'm early", ru: "Я рано" },
+            { en: "I'm shocked", ru: "Я в шоке" }, { en: "wake up", ru: "просыпаться" },
+            { en: "get up", ru: "вставать" }, { en: "stand up", ru: "встать (со стула)" },
+            { en: "cheer up", ru: "не грусти" }, { en: "grow up", ru: "взрослеть" },
+            { en: "show up", ru: "появиться" }, { en: "set up", ru: "настроить" },
+            { en: "pick up", ru: "забрать" }, { en: "clean up", ru: "убирать" },
+            { en: "save up", ru: "копить" }, { en: "speak up", ru: "говори громче" },
+            { en: "give up", ru: "сдаваться" }, { en: "make up", ru: "помириться" },
+            { en: "bring up", ru: "поднять тему" }, { en: "hang up", ru: "повесить трубку" },
+            { en: "go out", ru: "выходить" }, { en: "find out", ru: "выяснить" },
+            { en: "figure out", ru: "разобраться" }, { en: "fill out", ru: "заполнить" },
+            { en: "check out", ru: "зацени" }, { en: "hand out", ru: "раздавать" },
+            { en: "work out", ru: "тренироваться" }, { en: "run out of", ru: "закончиться" },
+            { en: "chill out", ru: "расслабься" }, { en: "drop out", ru: "бросить учебу" },
+            { en: "carry out", ru: "выполнить" }, { en: "point out", ru: "указать" },
+            { en: "cut out", ru: "прекратить" }, { en: "take out", ru: "выносить" },
+            { en: "sort out", ru: "уладить" }, { en: "look after", ru: "присматривать за" },
+            { en: "look for", ru: "искать" }, { en: "look at", ru: "смотреть на" },
+            { en: "look into", ru: "изучить" }, { en: "look forward to", ru: "ждать" },
+            { en: "get along (with)", ru: "ладить с" }, { en: "break up", ru: "расстаться" },
+            { en: "fall in love", ru: "влюбиться" }, { en: "come over", ru: "зайти в гости" },
+            { en: "set aside", ru: "отложить" }, { en: "sign up", ru: "зарегистрироваться" },
+            { en: "pick out", ru: "выбрать" }, { en: "turn off", ru: "выключить" },
+            { en: "cut off", ru: "прервать" }, { en: "take off", ru: "снять / взлетать" },
+            { en: "drop off", ru: "подвезти" }, { en: "pay off", ru: "окупиться" },
+            { en: "show off", ru: "хвастаться" }, { en: "go off", ru: "сработать" },
+            { en: "put off", ru: "откладывать" }, { en: "get off", ru: "выходить" },
+            { en: "turn on", ru: "включить" }, { en: "put on", ru: "надевать" },
+            { en: "log on", ru: "войти" }, { en: "hold on", ru: "подожди" },
+            { en: "hang on", ru: "держись" }, { en: "go on", ru: "продолжать" },
+            { en: "try on", ru: "примерять" }, { en: "come back", ru: "возвращаться" },
+            { en: "pay back", ru: "вернуть долг" }, { en: "call back", ru: "перезвонить" },
+            { en: "bring back", ru: "вернуть" }, { en: "take back", ru: "забрать обратно" },
+            { en: "So weird", ru: "Такое странное" }, { en: "Too much", ru: "Слишком" },
+            { en: "I'm tired of this", ru: "Я устал" }, { en: "I love this", ru: "Мне нравится" },
+            { en: "I don't like it", ru: "Мне не нравится" }, { en: "So sad", ru: "Очень грустно" },
+            { en: "I'm stressed", ru: "Я в стрессе" }, { en: "I'm relaxed", ru: "Я расслаблен" },
+            { en: "It's annoying", ru: "Это раздражает" }, { en: "I’m easy", ru: "мне все равно" },
+            { en: "How come", ru: "Как так?" }, { en: "What for", ru: "Зачем?" },
+            { en: "Why not", ru: "Почему бы и нет?" }, { en: "Who knows", ru: "Кто знает?" },
+            { en: "Where to", ru: "Куда?" }, { en: "How so", ru: "Почему так?" },
+            { en: "What now", ru: "И что теперь?" }, { en: "Anything else", ru: "Что-то ещё?" },
+            { en: "What's wrong", ru: "Что случилось?" }, { en: "All good", ru: "Всё в порядке" },
+            { en: "What’s your twenty(20)", ru: "где ты?" }, { en: "Right now", ru: "Прямо сейчас" },
+            { en: "Later on", ru: "Потом" }, { en: "In a bit", ru: "Через минутку" },
+            { en: "All day", ru: "Весь день" }, { en: "Every day", ru: "Каждый день" },
+            { en: "Not today", ru: "Не сегодня" }, { en: "Maybe later", ru: "Может позже" },
+            { en: "Too late", ru: "Слишком поздно" }, { en: "Let's meet", ru: "Давай встретимся" },
+            { en: "Time's up", ru: "Время вышло" }, { en: "Then", ru: "затем" },
+            { en: "A lush", ru: "алкаш" }, { en: "A moron", ru: "дебил" },
+            { en: "А slowpoke", ru: "тормоз" }, { en: "A wimp", ru: "тряпка" },
+            { en: "Turn it off", ru: "Выключи" }, { en: "Turn it on", ru: "Включи" },
+            { en: "Check it out", ru: "Зацени" }, { en: "Listen up", ru: "Слушай" },
+            { en: "Calm down", ru: "Успокойся" }, { en: "Don't worry", ru: "Не волнуйся" },
+            { en: "Follow me", ru: "Иди за мной" }, { en: "Leave it", ru: "Оставь" },
+            { en: "Move on", ru: "Идем дальше" }, { en: "Get out", ru: "Уходи" },
+            { en: "It depends", ru: "Зависит" }, { en: "That's fine", ru: "Это нормально" },
+            { en: "It's risky", ru: "Рискованно" }, { en: "So easy", ru: "Так просто" },
+            { en: "Too hard", ru: "Слишком сложно" }, { en: "Worth it", ru: "Оно стоит того" },
+            { en: "Not worth it", ru: "Не стоит" }, { en: "Sounds bad", ru: "Звучит плохо" },
+            { en: "No idea", ru: "Без понятия" }, { en: "Can't tell", ru: "Не могу сказать" },
+            { en: "Kinda", ru: "типо того" }, { en: "I don't care", ru: "Мне всё равно" },
+            { en: "Whatever you say", ru: "Как скажешь" }, { en: "You started it", ru: "Ты начал" },
+            { en: "That's not true", ru: "Неправда" }, { en: "I doubt it", ru: "Сомневаюсь" },
+            { en: "You wish", ru: "Мечтай" }, { en: "Not my fault", ru: "Не моя вина" },
+            { en: "Don't blame me", ru: "Не вини меня" }, { en: "Let it go", ru: "Забудь" },
+            { en: "Drop it", ru: "Оставь это" }, { en: "Could I have", ru: "могу ли я" },
+            { en: "That’s why", ru: "поэтому" }, { en: "Don’t trip", ru: "не твое дело" },
+            { en: "he didn make it", ru: "он не выжил" }, { en: "still young", ru: "всё ещё молодой" },
+            { en: "I am boring", ru: "я скучный" }, { en: "I’m Broke", ru: "нет денег" },
+            { en: "I’m running late", ru: "я опоздаваю" }, { en: "That works", ru: "договорились" },
+            { en: "I am interesting", ru: "я интересный" }, { en: "Make yourself at home", ru: "как дома" },
+            { en: "It slipped my mind", ru: "Вылетело из головы" }, { en: "That's on me", ru: "Это из-за меня" },
+            { en: "Let me get back to you", ru: "На связи" }, { en: "I'm all set", ru: "Нет, спасибо" },
+            { en: "It is what it is", ru: "Что есть, то есть" }
+        ];
+
         let pool = [], currentGameMode = '', correctCount = 0, wrongCount = 0, selectedCards = [];
         let currentWritingWord = null;
 
@@ -256,18 +346,11 @@
             if (selectedCards.length === 2) {
                 const [c1, c2] = selectedCards;
                 if (c1.dataset.pairId === c2.dataset.pairId) {
-                    correctCount++; 
-                    c1.classList.add('is-correct', 'matched'); 
-                    c2.classList.add('is-correct', 'matched');
+                    correctCount++; c1.classList.add('is-correct', 'matched'); c2.classList.add('is-correct', 'matched');
                     if (document.querySelectorAll('.card:not(.matched)').length === 0 && pool.length > 0) setTimeout(initMatchingRound, 800);
                 } else {
-                    wrongCount++; 
-                    c1.classList.add('is-wrong'); 
-                    c2.classList.add('is-wrong');
-                    setTimeout(() => { 
-                        c1.classList.remove('selected', 'is-wrong'); 
-                        c2.classList.remove('selected', 'is-wrong'); 
-                    }, 500);
+                    wrongCount++; c1.classList.add('is-wrong'); c2.classList.add('is-wrong');
+                    setTimeout(() => { c1.classList.remove('selected', 'is-wrong'); c2.classList.remove('selected', 'is-wrong'); }, 500);
                 }
                 selectedCards = [];
                 document.getElementById('correct-count').textContent = correctCount;
@@ -276,6 +359,7 @@
         }
 
         function initMatchingRound() {
+            if (pool.length === 0) return backToMenu();
             const enCol = document.getElementById('en-column'); const ruCol = document.getElementById('ru-column');
             enCol.innerHTML = ''; ruCol.innerHTML = '';
             let round = pool.splice(0, 6);
@@ -306,12 +390,9 @@
             const card = document.getElementById('target-ru');
             const input = document.getElementById('user-input');
             if (input.value.trim().toLowerCase() === currentWritingWord.en.toLowerCase()) {
-                correctCount++; speak(currentWritingWord.en); 
-                card.classList.add('is-correct'); 
-                setTimeout(nextWritingWord, 600);
+                correctCount++; speak(currentWritingWord.en); card.classList.add('is-correct'); setTimeout(nextWritingWord, 600);
             } else {
-                wrongCount++; 
-                card.classList.add('is-wrong');
+                wrongCount++; card.classList.add('is-wrong');
                 setTimeout(() => card.classList.remove('is-wrong'), 500);
             }
             document.getElementById('correct-count').textContent = correctCount;
@@ -325,7 +406,10 @@
         function backToMenu() {
             document.getElementById('body-tag').style.backgroundImage = "url('bg_menu.png')";
             document.getElementById('body-tag').classList.remove('game-active');
-            setTimeout(() => { correctCount = 0; wrongCount = 0; }, 500);
+            setTimeout(() => { correctCount = 0; wrongCount = 0; 
+                document.getElementById('correct-count').textContent = '0';
+                document.getElementById('wrong-count').textContent = '0';
+            }, 500);
         }
         window.speechSynthesis.onvoiceschanged = () => {};
     </script>
