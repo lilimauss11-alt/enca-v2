@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>EnCa Pro - Scrolling Edition</title>
+    
+    <!-- ИКОНКА ДЛЯ РАБОЧЕГО СТОЛА IPHONE -->
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EnCa Pro">
+
+    <title>EnCa Pro</title>
     <style>
         :root {
             --icon-red: #b31d35;
@@ -13,36 +20,32 @@
         }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
-        /* ВКЛЮЧАЮ ЕСТЕСТВЕННУЮ ПРОКРУТКУ */
         html, body { 
             margin: 0; padding: 0; 
             min-height: 100vh; width: 100%;
-            overflow-x: hidden; /* Запрет боковой прокрутки */
-            overflow-y: auto;   /* Разрешение вертикальной прокрутки */
+            overflow-x: hidden; 
+            overflow-y: auto;   
             font-family: -apple-system, sans-serif;
-            -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+            -webkit-overflow-scrolling: touch; 
         }
 
-        /* ФОН СТОИТ НА МЕСТЕ, КОНТЕНТ СКРОЛЛИТСЯ */
         #body-tag {
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
-            background-attachment: fixed; /* Прибивает фон к экрану */
+            background-attachment: fixed; 
             width: 100%; min-height: 100vh;
             transition: background-image 0.3s ease-in-out;
         }
 
-        #app-container { 
-            position: relative; width: 100%; min-height: 100vh; 
-        }
+        #app-container { position: relative; width: 100%; min-height: 100vh; }
 
         .screen {
             position: absolute; width: 100%; min-height: 100vh;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; align-items: center; 
             padding: 15px; padding-top: 50px; 
-            padding-bottom: 50px; /* Отступ снизу, чтобы кнопка Меню не прилипала */
+            padding-bottom: 50px; 
         }
 
         #menu-screen { z-index: 2; transform: translateY(0); }
@@ -120,13 +123,26 @@
         }
     </style>
 </head>
-<!-- Иконка для iPhone/iPad на рабочем столе -->
-<link rel="apple-touch-icon" href="icon.png">
-<!-- Название приложения под иконкой -->
-<meta name="apple-mobile-web-app-title" content="EnCa">
-<!-- Позволяет приложению открываться на весь экран без строки браузера -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<body id="body-tag" style="background-image: url('bg_menu.png');">
+
+    <div id="app-container">
+        <div id="menu-screen" class="screen">
+            <div class="menu-title"><span class="t-green">En</span><span class="t-red">Ca</span></div>
+            <div class="settings-card">
+                <div class="setting-row"><span id="lbl-speed">Скорость:</span>
+                    <select id="speech-rate"><option value="0.9" selected>Обычная</option><option value="1.2">Быстрая</option></select>
+                </div>
+                <div class="setting-row"><span id="lbl-voice">Голос:</span>
+                    <select id="voice-gender"><option value="female">Женский</option><option value="male">Мужской</option></select>
+                </div>
+                <div class="setting-row"><span id="lbl-lang">Язык:</span>
+                    <select id="ui-lang" onchange="updateLang()"><option value="ru" selected>Русский</option><option value="en">English</option></select>
+                </div>
+            </div>
+            <button class="menu-btn btn-ear" onclick="startGame('listening')">НА СЛУХ</button>
+            <button class="menu-btn btn-classic" onclick="startGame('classic')">КЛАССИКА</button>
+            <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
+        </div>
 
         <div id="game-screen" class="screen">
             <div id="game-content" style="width:100%; display:flex; flex-direction:column; align-items:center;">
@@ -153,7 +169,6 @@
     </div>
 
     <script>
-        // Твой полный список из 171 слова
         const allWords = [
             { en: "What's up", ru: "Как дела" }, { en: "Not much", ru: "Ничего особенного" },
             { en: "Here we go", ru: "Поехали" }, { en: "There you go", ru: "вот так" },
@@ -304,7 +319,6 @@
             else if (mode === 'classic') body.style.backgroundImage = "url('bg_classic.png')";
             else if (mode === 'writing') body.style.backgroundImage = "url('bg_write.png')";
 
-            // ВКЛЮЧАЮ game-active СРАЗУ
             document.getElementById('body-tag').classList.add('game-active');
             
             if (mode === 'writing') {
@@ -389,13 +403,8 @@
 
         function backToMenu() {
             document.getElementById('body-tag').style.backgroundImage = "url('bg_menu.png')";
-            
-            // ВЫКЛЮЧАЮ game-active
             document.getElementById('body-tag').classList.remove('game-active');
-            
-            // ВОЗВРАЩАЮ СКРОЛЛ НАВЕРХ ПРИ ВОЗВРАТЕ
             window.scrollTo(0, 0);
-            
             setTimeout(() => { correctCount = 0; wrongCount = 0; 
                 document.getElementById('correct-count').textContent = '0';
                 document.getElementById('wrong-count').textContent = '0';
