@@ -6,8 +6,6 @@
     <title>EnCa Pro</title>
     <style>
         :root {
-            --icon-red: #b31d35;
-            --icon-green: #108a50;
             --neutral-gray: #d1d1d1;
             --error-red: #8b0000;
         }
@@ -20,7 +18,6 @@
             font-family: -apple-system, sans-serif;
         }
 
-        /* УБРАЛ РАСТЯЖЕНИЕ, ОСТАВИЛ ЧИСТОЕ 9:16 */
         #body-tag {
             background-repeat: no-repeat;
             background-position: center center;
@@ -32,14 +29,10 @@
             transition: background-image 0.3s ease-in-out;
         }
 
-        #app-container { 
-            position: relative; 
-            width: 100%; height: 100vh; 
-        }
+        #app-container { position: relative; width: 100%; height: 100vh; }
 
         .screen {
-            position: absolute; 
-            width: 100%; height: 100%;
+            position: absolute; width: 100%; height: 100%;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; align-items: center; 
             padding: 15px; padding-top: 40px;
@@ -51,8 +44,8 @@
         .game-active #game-screen { transform: translateY(0); z-index: 3; }
 
         .menu-title { font-size: 54px; font-weight: 900; margin: 10px 0; letter-spacing: -2px; }
-        .t-green { color: var(--icon-green); }
-        .t-red { color: var(--icon-red); }
+        .t-green { color: #108a50; }
+        .t-red { color: #b31d35; }
 
         .settings-card {
             width: 100%; max-width: 400px;
@@ -70,30 +63,38 @@
             gap: 15px; font-weight: bold; font-size: 18px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
-        .btn-ear { background: var(--icon-green); color: white; }
-        .btn-classic { background: var(--icon-red); color: white; }
-        .btn-write { background: white; border: 3px solid var(--icon-green); color: var(--icon-green); }
+        .btn-ear { background: #108a50; color: white; }
+        .btn-classic { background: #b31d35; color: white; }
+        .btn-write { background: white; border: 3px solid #108a50; color: #108a50; }
 
         .stats-container { display: flex; gap: 8px; margin-bottom: 15px; width: 100%; max-width: 500px; }
         .stat-card { 
             flex: 1; height: 45px; background: rgba(255,255,255,0.9); border-radius: 12px; 
             display: flex; align-items: center; justify-content: center; gap: 5px; font-weight: bold;
-            font-size: 14px;
         }
         .stat-card img { height: 20px; }
 
+        /* КАРТОЧКИ С РИСУНКАМИ */
         .card {
             min-height: 75px; cursor: pointer; transition: 0.2s;
             display: flex; align-items: center; justify-content: center;
             padding: 10px; text-align: center; font-size: 14px; font-weight: 700;
-            background: #fff; border-radius: 15px; color: #333;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
+            color: #333;
         }
 
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
-        .is-wrong { outline: 5px solid var(--error-red) !important; outline-offset: -3px; animation: shake 0.4s; }
-        .is-correct { background: var(--icon-green) !important; color: white !important; }
-        .selected { outline: 4px solid var(--neutral-gray); }
+        
+        .is-wrong { 
+            background: url('card_ru.png') no-repeat center !important; background-size: 100% 100% !important;
+            animation: shake 0.4s;
+            border-radius: 15px;
+        }
+        .is-correct { 
+            background: url('card_en.png') no-repeat center !important; background-size: 100% 100% !important;
+            border-radius: 15px;
+        }
+        .selected { outline: 4px solid var(--neutral-gray); border-radius: 15px; }
         .matched { opacity: 0.3; pointer-events: none; }
 
         .action-btn {
@@ -101,14 +102,22 @@
             margin-top: 15px; border-radius: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
             font-size: 17px; border: none;
         }
+
+        #writing-mode { display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+        .write-card { 
+            width: 100%; max-width: 400px; padding: 40px 20px; 
+            background: url('card_gray.png') no-repeat center; background-size: 100% 100%;
+            text-align: center; font-size: 22px; font-weight: bold; color: #000;
+        }
+        .write-input { 
+            width: 100%; max-width: 400px; padding: 15px; border-radius: 15px; border: 2px solid #ccc; 
+            font-size: 18px; text-align: center; outline: none; background: #fff;
+        }
         
         .hidden-en { color: transparent !important; position: relative; }
         .hidden-en::after { 
-            content: ''; 
-            background: url('listen_icon.png') no-repeat center; 
-            background-size: contain; 
-            width: 30px; height: 30px; 
-            position: absolute; 
+            content: ''; background: url('listen_icon.png') no-repeat center; 
+            background-size: contain; width: 30px; height: 30px; position: absolute; 
         }
     </style>
 </head>
@@ -119,25 +128,15 @@
             <div class="menu-title"><span class="t-green">En</span><span class="t-red">Ca</span></div>
             <div class="settings-card">
                 <div class="setting-row"><span id="lbl-speed">Скорость:</span>
-                    <select id="speech-rate">
-                        <option value="0.9" selected>Обычная</option>
-                        <option value="1.2">Быстрая</option>
-                    </select>
+                    <select id="speech-rate"><option value="0.9" selected>Обычная</option><option value="1.2">Быстрая</option></select>
                 </div>
                 <div class="setting-row"><span id="lbl-voice">Голос:</span>
-                    <select id="voice-gender">
-                        <option value="female">Женский</option>
-                        <option value="male">Мужской</option>
-                    </select>
+                    <select id="voice-gender"><option value="female">Женский</option><option value="male">Мужской</option></select>
                 </div>
                 <div class="setting-row"><span id="lbl-lang">Язык:</span>
-                    <select id="ui-lang" onchange="updateLang()">
-                        <option value="ru" selected>Русский</option>
-                        <option value="en">English</option>
-                    </select>
+                    <select id="ui-lang" onchange="updateLang()"><option value="ru" selected>Русский</option><option value="en">English</option></select>
                 </div>
             </div>
-            
             <button class="menu-btn btn-ear" onclick="startGame('listening')">НА СЛУХ</button>
             <button class="menu-btn btn-classic" onclick="startGame('classic')">КЛАССИКА</button>
             <button class="menu-btn btn-write" onclick="startGame('writing')">ПИСЬМО</button>
@@ -156,9 +155,9 @@
                     <div id="ru-column" style="flex:1; display:flex; flex-direction:column; gap:8px;"></div>
                 </div>
 
-                <div id="writing-mode" style="display:none; width:100%; flex-direction:column; align-items:center; gap:10px;">
-                    <div id="target-ru" style="width:100%; max-width:400px; padding:40px 20px; background:#fff; border-radius:20px; text-align:center; font-size:22px; font-weight:bold; box-shadow:0 10px 20px rgba(0,0,0,0.15);">...</div>
-                    <input type="text" id="user-input" style="width:100%; max-width:400px; padding:15px; border-radius:15px; border:2px solid #ccc; font-size:18px; text-align:center; outline:none;" placeholder="...">
+                <div id="writing-mode">
+                    <div id="target-ru" class="write-card">...</div>
+                    <input type="text" id="user-input" placeholder="...">
                     <button class="action-btn" onclick="checkWritingAnswer()" id="check-btn"><span class="t-green">Прове</span><span class="t-red">рить</span></button>
                 </div>
 
@@ -222,13 +221,10 @@
         function startGame(mode) {
             currentGameMode = mode;
             pool = [...allWords].sort(() => Math.random() - 0.5);
-            
-            // СМЕНА ФОНА ДЛЯ КАЖДОЙ ИГРЫ
             const body = document.getElementById('body-tag');
             if (mode === 'listening') body.style.backgroundImage = "url('bg_listen.png')";
             else if (mode === 'classic') body.style.backgroundImage = "url('bg_classic.png')";
             else if (mode === 'writing') body.style.backgroundImage = "url('bg_write.png')";
-
             document.getElementById('body-tag').classList.add('game-active');
             if (mode === 'writing') {
                 document.getElementById('matching-columns').style.display = 'none';
@@ -310,7 +306,6 @@
         });
 
         function backToMenu() {
-            // ВОЗВРАТ К МЕНЮШНОМУ ФОНУ
             document.getElementById('body-tag').style.backgroundImage = "url('bg_menu.png')";
             document.getElementById('body-tag').classList.remove('game-active');
             setTimeout(() => { correctCount = 0; wrongCount = 0; }, 500);
